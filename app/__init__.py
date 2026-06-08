@@ -1,0 +1,23 @@
+# app/__init__.py
+from flask import Flask
+from .extensions import db, migrate, login_manager
+from config import Config
+
+def create_app(config_class=Config) -> Flask:
+    app: Flask = Flask(__name__)
+
+    app.config.from_object(config_class)
+
+    db.init_app(app)    # Link the extension to the app only now
+    migrate.init_app(app, db)
+    login_manager.init_app(app)
+
+    from .models import User
+
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint)
+
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+
+    return app
