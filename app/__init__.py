@@ -2,6 +2,13 @@
 from flask import Flask
 from .extensions import db, migrate, login_manager
 from config import Config
+from .models import User
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 def create_app(config_class=Config) -> Flask:
     app: Flask = Flask(__name__)
@@ -15,7 +22,7 @@ def create_app(config_class=Config) -> Flask:
     from .models import User
 
     from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
+    app.register_blueprint(auth_blueprint, url_prefix="/auth")
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
