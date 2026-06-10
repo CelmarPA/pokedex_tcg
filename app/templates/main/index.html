@@ -1,3 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %} - Index{% endblock %}
+{% block title %} - Home{% endblock %}
+
+{% block content %}
+
+<h1>Pokédex TCG</h1>
+
+<div>
+    {% if current_user.is_authenticated %}
+        <p>Welcome, {{ current_user.username }}!</p>
+    {% else %}
+        <p>You are not logged in.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

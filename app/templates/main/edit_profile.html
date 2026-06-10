@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %} - Login{% endblock %}
+{% block title %} - Edit Profile{% endblock %}
 
 {% block content%}
 <div class="row justify-content-center">
     <div class="col-md-5">
 
-    <h2 class="text-center mb-4">Sign In</h2>
+    <h2 class="text-center mb-4">Edit your profile</h2>
 
         <form method="POST">
 
             {{ form.hidden_tag() }}
 
             <div class="mb-3">
-                {{ form.identifier.label(class="form-label") }}
-                {{ form.identifier(class="form-control") }}
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control") }}
 
-                {% for error in form.identifier.errors %}
+                {% for error in form.username.errors %}
                     <div class="text-danger small">
                         {{ error }}
                     </div>
@@ -24,19 +24,14 @@
             </div>
 
             <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control") }}
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
 
-                {% for error in form.password.errors %}
+                {% for error in form.email.errors %}
                     <div class="text-danger small">
                         {{ error }}
                     </div>
                 {% endfor %}
-            </div>
-
-            <div class="form-check mb-3">
-                {{ form.remember_me(class="form-check-input") }}
-                {{ form.remember_me.label(class="form-check-label") }}
             </div>
 
             <div class="d-grid">

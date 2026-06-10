@@ -7,7 +7,7 @@ from .models import User
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 
 def create_app(config_class=Config) -> Flask:
@@ -19,7 +19,7 @@ def create_app(config_class=Config) -> Flask:
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-    from .models import User
+    login_manager.login_view = "auth.login"
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix="/auth")

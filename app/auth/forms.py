@@ -1,7 +1,7 @@
 # app/auth/forms.py
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, ValidationError
-from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, ValidationError
 from ..models import User
 
 
@@ -23,3 +23,11 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, field: StringField) -> None:
         if User.query.filter_by(email=field.data).first():
             raise ValidationError("Email already registered.")
+
+
+class LoginForm(FlaskForm):
+
+    identifier = StringField("Username or Email", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    remember_me = BooleanField("Keep me logged in")
+    submit = SubmitField("Login")
