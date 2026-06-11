@@ -27,4 +27,7 @@ def create_app(config_class=Config) -> Flask:
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
+    from .cards import cards as cards_blueprint
+    app.register_blueprint(cards_blueprint, url_prefix="/cards")
+
     return app

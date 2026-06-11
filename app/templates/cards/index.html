@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title%} - Cards{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Pokédex TCG Cards</h2>
+
+<form method="GET" class="mb-4">
+
+    <div class="input-group">
+
+        <input type="text" name="search" class="form-control" placeholder="Search cards..." value="{{ search }}">
+
+        <button type="submit" class="btn btn-danger">
+            Search
+        </button>
+
+    </div>
+
+</form>
+
+<div class="row">
+
+    {% if not cards %}
+        <div class="alert alert-warning">
+            No cards found.
+        </div>
+    {% endif %}
+
+    {% for card in cards%}
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <a href="{{ url_for('cards.card_detail', card_id=card['id']) }}">
+                    <img src="{{ card['images']['small'] }}"
+                         alt="{{ card['name'] }}"
+                         class="card-img-top">
+                </a>
+
+                <div class="card-body text-center">
+
+                    <h5 class="card-title">
+                        <a href="{{ url_for('cards.card_detail', card_id=card['id']) }}"
+                           class="text-decoration-none text-dark">
+                            {{ card["name"] }}
+                        </a>
+                    </h5>
+
+                    {% if card.get("supertype") == "Pokémon" %}
+
+                        <p>
+                            HP:
+                            {{ card.get("hp", "?") }}
+                        </p>
+
+                        <p>
+                            Type:
+                            {{ card.get("types", ["Unknown"])[0] }}
+                        </p>
+
+                    {% endif %}
+
+                    <p>
+                        Rarity:
+                        {{ card.get("rarity", "Unknown") }}
+                    </p>
+
+                    <p>
+                        Set:
+                        {{ card["set"]["name"] }}
+                    </p>
+
+                    <p>
+                        Class:
+                        {{ card["supertype"] }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

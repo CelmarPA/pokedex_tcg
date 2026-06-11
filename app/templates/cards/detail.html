@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %} - Card{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Pokédex TCG Card</h2>
+
+<div class="row">
+
+    {% if not card %}
+        <div class="alert alert-warning">
+            No card found.
+        </div>
+    {% endif %}
+
+    <div class="col-md-4 text-center">
+        <img src="{{ card['images']['large'] }}"
+             alt="{{ card['name'] }}"
+             class="img-fluid rounded shadow card-detail-image">
+    </div>
+
+    <div class="col-md-8">
+
+        <h2>
+            {{ card["name"] }}
+        </h2>
+
+        {% if card.get("supertype") == "Pokémon" %}
+
+            <p>
+                HP:
+                {{ card.get("hp", "?") }}
+            </p>
+
+            <p>
+                Type:
+                {{ card.get("types", ["Unknown"])[0] }}
+            </p>
+
+            {% if card.get("evolvesFrom") %}
+                <p>
+                    Evolves From:
+                    {{ card["evolvesFrom"] }}
+                </p>
+            {% endif %}
+
+        {% endif %}
+
+        <p>
+            Rarity:
+            {{ card.get("rarity", "Unknown") }}
+        </p>
+
+        <p>
+            Set:
+            {{ card["set"]["name"] }}
+        </p>
+
+        <p>
+            Class:
+            {{ card["supertype"] }}
+        </p>
+
+    </div>
+
+</div>
+
+{% if card.get("flavorText") %}
+    <div class="mt-4">
+        <h4>Flavor Text</h4>
+        <p>
+            {{ card["flavorText"] }}
+        </p>
+    </div>
+{% endif %}
+
+{% if card.get("attacks") %}
+
+    <h4 class="mt-4">Attacks</h4>
+
+    {% for attack in card["attacks"] %}
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+                    {{ attack["name"] }}
+                </h5>
+
+                {% if attack.get("damage") %}
+                    <p>
+                        <strong>Damage:</strong>
+                        {{ attack["damage"] }}
+                    </p>
+                {% endif %}
+
+                {% if attack.get("text") %}
+                    <p class="card-text">
+                        {{ attack["text"] }}
+                    </p>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+{% endif %}
+
+{% endblock %}
