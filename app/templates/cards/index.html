@@ -42,39 +42,39 @@
 
                 <div class="card-body text-center">
 
-                    <h5 class="card-title">
+                    <h4 class="card-title">
                         <a href="{{ url_for('cards.card_detail', card_id=card['id']) }}"
                            class="text-decoration-none text-dark">
                             {{ card["name"] }}
                         </a>
-                    </h5>
+                    </h4>
 
                     {% if card.get("supertype") == "Pokémon" %}
 
                         <p>
-                            HP:
+                            <strong>HP:</strong>
                             {{ card.get("hp", "?") }}
                         </p>
 
                         <p>
-                            Type:
+                            <strong>Type:</strong>
                             {{ card.get("types", ["Unknown"])[0] }}
                         </p>
 
                     {% endif %}
 
                     <p>
-                        Rarity:
+                        <strong>Rarity:</strong>
                         {{ card.get("rarity", "Unknown") }}
                     </p>
 
                     <p>
-                        Set:
+                        <strong>Set:</strong>
                         {{ card["set"]["name"] }}
                     </p>
 
                     <p>
-                        Class:
+                        <strong>Class:</strong>
                         {{ card["supertype"] }}
                     </p>
 
