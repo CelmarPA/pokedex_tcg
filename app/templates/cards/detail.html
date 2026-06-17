@@ -27,7 +27,7 @@
 
         <p>
             <strong>Artist:</strong>
-            {{ card["artist"] }}
+            {{ card.get("artist", "Unknown") }}
         </p>
 
         <p>
@@ -278,9 +278,61 @@
 </a>
 
 <div class="mt-4">
+
+</div>
+
+<h4 class="mt-14">Collection Status</h4>
+
+<div class="row">
+
+    <div class="col-md-4 mb-3">
+
+        <div class="card h-100 shadow-sm border-0">
+
+            <div class="card-body">
+
+                {% if collection_card %}
+
+                    <p class="mb-1 text-success fw-semibold">
+                        ✓ In your collection
+                    </p>
+
+                    <p class="mb-0">
+                        You own <strong>{{ collection_card.quantity }}</strong> copy(ies)
+                    </p>
+
+                {% else %}
+
+                    <p class="mb-1 text-muted fw-semibold">
+                        Not in your collection
+                    </p>
+
+                    <p class="mb-0">
+                        You own <strong>0</strong> copies
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="mt-4 d-flex gap-2 align-items-center">
+
+    <form action="{{ url_for('collection.add_card', card_id=card['id']) }}" method="POST">
+        <button type="submit" class="btn btn-warning">
+            Add to Collection
+        </button>
+    </form>
+
     <a href="{{ url_for('cards.index') }}" class="btn btn-secondary">
         ← Back to Cards
     </a>
+
 </div>
 
 {% endblock %}

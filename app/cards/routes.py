@@ -1,6 +1,8 @@
 from flask import render_template, request
+from flask_login import current_user
 from . import cards
 from .services import get_cards, get_card
+from ..models import Collection
 
 
 @cards.route("/")
@@ -14,7 +16,15 @@ def index():
 
 @cards.route("/<card_id>", methods=["GET"])
 def card_detail(card_id: str):
-    print(card_id)
     card_data = get_card(card_id)
 
-    return render_template("cards/detail.html", card=card_data)
+    if current_user.is_authenticated:
+        collection_card = Collection.query.filter_by(
+            user_id=current_user.id,
+            card_id=card_id
+        ).first()
+
+    else:
+        collection_card = None
+
+    return render_template("cards/detail.html", card=card_data, collection_card=collection_card)

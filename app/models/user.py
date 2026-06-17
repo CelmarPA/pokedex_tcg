@@ -1,18 +1,26 @@
 from datetime import datetime, UTC
 from flask_login import UserMixin
 from sqlalchemy import Integer, String, DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .collection import Collection
 
 
 class User(UserMixin, db.Model):
+
+    __tablename__ = "users"
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
     email: Mapped[str] = mapped_column(String(128), unique=True, index=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     member_since: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
     last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    collections: Mapped[list["Collection"]] = relationship(back_populates="user")
 
     @property
     def password(self) -> None:

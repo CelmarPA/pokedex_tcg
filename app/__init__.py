@@ -30,4 +30,7 @@ def create_app(config_class=Config) -> Flask:
     from .cards import cards as cards_blueprint
     app.register_blueprint(cards_blueprint, url_prefix="/cards")
 
+    from .collection import collection as collection_blueprint
+    app.register_blueprint(collection_blueprint, url_prefix="/collection")
+
     return app
