@@ -21,8 +21,6 @@ def get_cards(search=None, page_size=50):
     else:
         params["q"] = f"name:*{search}*"
 
-    print(params)
-
     response = requests.get(
         API_URL,
         headers=HEADERS,
@@ -42,7 +40,5 @@ def get_card(card_id: str):
     )
 
     response.raise_for_status()
-
-    print(response.json()["data"])
 
     return response.json()["data"]
