@@ -8,15 +8,14 @@ if TYPE_CHECKING:
     from .user import User
 
 
-class Collection(db.Model):
+class Favorite(db.Model):
 
-    __tablename__ = "collection"
+    __tablename__ = "favorites"
 
-    __table_args__ = (UniqueConstraint("user_id", "card_id", name="uq_user_card"),)
+    __table_args__ = (UniqueConstraint("user_id", "card_id", name="uq_user_card_favorite"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    user: Mapped["User"] = relationship(back_populates="collections")
-    card_id: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
-    quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    user: Mapped["User"] = relationship(back_populates="favorites")
+    card_id: Mapped[str] = mapped_column(String(50), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))

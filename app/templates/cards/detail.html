@@ -323,20 +323,70 @@
 
     </div>
 
-{% endif %}
+    <h4 class="mt-14">Favorite Status</h4>
+
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card h-100 shadow-sm {% if favorite_card %}border-success{% else %}border-secondary{% endif %}">
+
+                <div class="card-body">
+
+                    {% if favorite_card %}
+
+                        <p class="mb-1 text-success fw-semibold">
+                            ★ In your favorites
+                        </p>
+
+                    {% else %}
+
+                        <p class="mb-1 text-muted fw-semibold">
+                            ☆ Not in favorites
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 <div class="mt-4 d-flex gap-2 align-items-center">
 
     <form action="{{ url_for('collection.add_card', card_id=card['id']) }}" method="POST">
-        <button type="submit" class="btn btn-warning">
+        <button type="submit" class="btn btn-outline-info">
             Add to Collection
         </button>
     </form>
+
+    {% if not favorite_card %}
+
+        <form action="{{ url_for('favorite.toggle_favorite', card_id=card['id']) }}" method="POST">
+            <button type="submit" class="btn btn-outline-info">
+                ☆ Add Favorite
+            </button>
+        </form>
+
+    {% else %}
+
+        <form action="{{ url_for('favorite.toggle_favorite', card_id=card['id']) }}" method="POST">
+            <button type="submit" class="btn btn-outline-danger">
+                ★ Remove Favorite
+            </button>
+        </form>
+
+    {% endif %}
 
     <a href="{{ url_for('cards.index') }}" class="btn btn-secondary">
         ← Back to Cards
     </a>
 
 </div>
+
+{% endif %}
 
 {% endblock %}
