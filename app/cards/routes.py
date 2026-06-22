@@ -2,7 +2,7 @@ from flask import render_template, request
 from flask_login import current_user
 from . import cards
 from .services import get_cards, get_card
-from ..models import Collection, Favorite
+from ..models import Collection, Favorite, Wishlist
 
 
 @cards.route("/")
@@ -29,13 +29,20 @@ def card_detail(card_id: str):
             card_id=card_id
         ).first()
 
+        cards_wishlist = Wishlist.query.filter_by(
+            user_id=current_user.id,
+            card_id=card_id
+        ).first()
+
     else:
         collection_card = None
         favorite_card = None
+        cards_wishlist = None
 
     return render_template(
         "cards/detail.html",
         card=card_data,
         collection_card=collection_card,
-        favorite_card=favorite_card
+        favorite_card=favorite_card,
+        cards_wishlist=cards_wishlist
     )

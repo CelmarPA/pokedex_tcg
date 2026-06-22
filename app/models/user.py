@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .collection import Collection
     from .favorite import Favorite
+    from .wishlist import Wishlist
 
 
 class User(UserMixin, db.Model):
@@ -23,6 +24,7 @@ class User(UserMixin, db.Model):
     last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
     collections: Mapped[list["Collection"]] = relationship(back_populates="user")
     favorites: Mapped[list["Favorite"]] = relationship(back_populates="user")
+    wishlists: Mapped[list["Wishlist"]] = relationship(back_populates="user")
 
     @property
     def password(self) -> None:

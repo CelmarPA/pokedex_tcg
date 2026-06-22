@@ -9,6 +9,7 @@ from ..cards.services import get_card
 @favorite.route("/toggle/<card_id>", methods=["POST"])
 @login_required
 def toggle_favorite(card_id: str):
+
     favorite_card = Favorite.query.filter_by(
         user_id=current_user.id,
         card_id=card_id
@@ -42,9 +43,9 @@ def toggle_favorite(card_id: str):
 def favorite_cards():
     favorites = []
 
-    for favorite in current_user.favorites:
+    for card_favorite in current_user.favorites:
         favorites.append({
-            "card": get_card(favorite.card_id)
+            "card": get_card(card_favorite.card_id)
         })
 
     return render_template("favorite/index.html", favorites=favorites)

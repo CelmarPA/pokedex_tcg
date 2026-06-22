@@ -36,4 +36,7 @@ def create_app(config_class=Config) -> Flask:
     from .favorite import favorite as favorite_blueprint
     app.register_blueprint(favorite_blueprint, url_prefix="/favorite")
 
+    from .wishlist import wishlist as wishlist_blueprint
+    app.register_blueprint(wishlist_blueprint, url_prefix="/wishlist")
+
     return app

@@ -355,6 +355,36 @@
 
     </div>
 
+    <h4 class="mt-4">Wishlist Status</h4>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+
+            <div class="card h-100 shadow-sm {% if cards_wishlist %}border-success{% else %}border-secondary{% endif %}">
+
+                <div class="card-body">
+
+                    {% if cards_wishlist %}
+
+                        <p class="mb-1 text-success fw-semibold">
+                            ★ In your wishlist
+                        </p>
+
+                    {% else %}
+
+                        <p class="mb-1 text-muted fw-semibold">
+                            ☆ Not in wishlist
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
 <div class="mt-4 d-flex gap-2 align-items-center">
 
     <form action="{{ url_for('collection.add_card', card_id=card['id']) }}" method="POST">
@@ -376,6 +406,24 @@
         <form action="{{ url_for('favorite.toggle_favorite', card_id=card['id']) }}" method="POST">
             <button type="submit" class="btn btn-outline-danger">
                 ★ Remove Favorite
+            </button>
+        </form>
+
+    {% endif %}
+
+    {% if not cards_wishlist %}
+
+        <form action="{{ url_for('wishlist.toggle_wishlist', card_id=card['id']) }}" method="POST">
+            <button class="btn btn-outline-info">
+                ☆ Add To Wishlist
+            </button>
+        </form>
+
+    {% else %}
+
+        <form action="{{ url_for('wishlist.toggle_wishlist', card_id=card['id']) }}" method="POST">
+            <button class="btn btn-outline-danger">
+                ★ Remove From Wishlist
             </button>
         </form>
 

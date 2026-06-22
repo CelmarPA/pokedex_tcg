@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %} - My Wishlist{% endblock %}
+
+{% block content %}
+
+<h2>My Wishlist</h2>
+
+{% if cards_wishlist %}
+    <div class="row">
+
+        {% for item in cards_wishlist %}
+
+            <div class="col-md-3 mb-4">
+
+                <div class="card h-100 shadow-sm border-0">
+
+                    <div class="card-body text-center">
+
+                        <img
+                            src="{{ item.card.images.small }}"
+                            class="card-img-top mb-3"
+                            alt="{{ item.card.name }}">
+
+                        <h5 class="card-title">
+                            {{ item.card.name }}
+                        </h5>
+
+                        <div class="d-flex gap-2 justify-content-center mb-3">
+
+                            <form
+                                action="{{ url_for('wishlist.toggle_wishlist', card_id=item.card.id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Are you sure you want to remove this card from your wishlist?')"
+                            >
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Remove From Wishlist
+                                </button>
+                            </form>
+
+                        </div>
+
+                        <a
+                            href="{{ url_for('cards.card_detail', card_id=item.card.id) }}"
+                            class="btn btn-primary btn-sm w-100"
+                        >
+                            View Details
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <div class="alert alert-info">
+        You haven't added any cards to your wishlist yet.
+    </div>
+
+{% endif %}
+
+<div class="mt-4 d-flex gap-2 align-items-center">
+
+    <a href="{{ url_for('cards.index') }}" class="btn btn-secondary">
+        ← Back to Cards
+    </a>
+
+</div>
+
+{% endblock %}
