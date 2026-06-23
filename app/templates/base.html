@@ -23,23 +23,74 @@
 
         <div class="container">
 
+            <!-- BRAND -->
             <a class="navbar-brand" href="{{ url_for('main.index') }}">
                 Pokédex TCG
             </a>
 
+            <!-- USER INFO -->
             {% if current_user.is_authenticated %}
-                <span class="text-white">
+                <span class="text-white d-none d-md-inline">
                     Trainer: {{ current_user.username }}
                 </span>
             {% endif %}
 
-            <ul class="navbar-nav d-flex flex-row gap-3">
+            <!-- MENU -->
+            <ul class="navbar-nav d-flex flex-row gap-3 align-items-center">
+
+                <!-- HOME -->
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ url_for('main.index') }}">
                         Home
                     </a>
                 </li>
-                {% if current_user.is_authenticated%}
+
+                <!-- DASHBOARD -->
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('main.dashboard') }}">
+                        Dashboard
+                    </a>
+                </li>
+                {% endif %}
+
+                <!-- CARDS -->
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('cards.index') }}">
+                        Cards
+                    </a>
+                </li>
+
+                <!-- COLLECTION -->
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('collection.my_collection') }}">
+                        Collection
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('favorite.favorite_cards') }}">
+                        Favorites
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('wishlist.my_wishlist') }}">
+                        Wishlist
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('statistics.index') }}">
+                        Statistics
+                    </a>
+                </li>
+                {% endif %}
+
+                <!-- AUTH -->
+                {% if current_user.is_authenticated %}
+
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{ url_for('main.profile') }}">
                             Profile
@@ -51,7 +102,9 @@
                             Logout
                         </a>
                     </li>
+
                 {% else %}
+
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{ url_for('auth.login') }}">
                             Login
@@ -63,6 +116,7 @@
                             Register
                         </a>
                     </li>
+
                 {% endif %}
 
             </ul>

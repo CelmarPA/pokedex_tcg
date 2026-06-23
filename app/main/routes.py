@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileForm
 from .. import db
+from ..statistics.services import get_user_statistics
 
 
 @main.route("/")
@@ -39,3 +40,15 @@ def edit_profile():
         return redirect(url_for("main.profile"))
 
     return render_template("main/edit_profile.html", form=form)
+
+
+@main.route("/dashboard")
+@login_required
+def dashboard():
+
+    stats = get_user_statistics(current_user)
+
+    return render_template(
+        "main/dashboard.html",
+        **stats
+    )

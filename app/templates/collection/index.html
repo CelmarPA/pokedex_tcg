@@ -70,12 +70,20 @@
 
                         </div>
 
-                        <a
-                            href="{{ url_for('cards.card_detail', card_id=item.card.id) }}"
-                            class="btn btn-primary btn-sm w-100"
-                        >
-                            View Details
+                    <a
+                        href="{{ url_for('cards.card_detail', card_id=item.card.id) }}"
+                        class="btn btn-primary btn-sm w-100"
+                    >
+                        View Details
+                    </a>
+
+                    <div class="mt-4 d-flex gap-2 align-items-center">
+                        
+                        <a href="{{ url_for('cards.index') }}" class="btn btn-secondary">
+                            ← Back to Cards
                         </a>
+
+                    </div>
 
                     </div>
 

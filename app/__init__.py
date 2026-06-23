@@ -39,4 +39,7 @@ def create_app(config_class=Config) -> Flask:
     from .wishlist import wishlist as wishlist_blueprint
     app.register_blueprint(wishlist_blueprint, url_prefix="/wishlist")
 
+    from .statistics import statistics as statistics_blueprint
+    app.register_blueprint(statistics_blueprint, url_prefix="/statistics")
+
     return app

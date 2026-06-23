@@ -46,7 +46,7 @@ def login():
 
             flash("Logged in successfully.")
 
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.dashboard"))
 
         flash("Invalid username/email or password.")
 

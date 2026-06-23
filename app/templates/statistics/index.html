@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %} - Statistics{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">My Statistics</h2>
+
+<div class="row">
+
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5>Total Cards</h5>
+                <p class="display-6">
+                    {{ total_cards }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5>Unique Cards</h5>
+                <p class="display-6">
+                    {{ unique_cards }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5>Favorites</h5>
+                <p class="display-6">
+                    {{ favorite_count }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5>Wishlist</h5>
+                <p class="display-6">
+                    {{ wishlist_count }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5>Collection Value</h5>
+                <p class="display-6">
+                    ${{ "%.2f"|format(collection_value) }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<h3 class="mt-4 text-center">
+    🏆 Most Owned Card
+</h3>
+
+<div class="card h-100 shadow border-warning">
+
+    <div class="card-body text-center">
+
+        {% if most_owned_card %}
+
+            <img
+                src="{{ most_owned_card_data.images.small }}"
+                class="img-fluid mb-3"
+                style="max-width: 200px;"
+                alt="{{ most_owned_card_data.name }}"
+            >
+
+            <p>
+                <strong>Name:</strong>
+                {{ most_owned_card_data.name }}
+            </p>
+
+            <p>
+                <strong>Copies:</strong>
+                {{ most_owned_card.quantity }}
+            </p>
+
+            <a
+                href="{{ url_for('cards.card_detail', card_id=most_owned_card.card_id) }}"
+                class="btn btn-primary btn-sm"
+            >
+                View Details
+            </a>
+
+        {% else %}
+
+            <p>
+                No cards in collection.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<div class="mt-4 d-flex gap-2 align-items-center">
+
+    <a href="{{ url_for('cards.index') }}" class="btn btn-secondary">
+        ← Back to Cards
+    </a>
+
+</div>
+
+{% endblock %}
