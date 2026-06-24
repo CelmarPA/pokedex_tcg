@@ -28,14 +28,18 @@ def get_user_statistics(user):
         for item in user.collections:
             card_data = get_card(item.card_id)
 
-            prices = card_data["tcgplayer"]["prices"]
+            tcgplayer = card_data.get("tcgplayer")
+
+            if not tcgplayer:
+                continue
+
+            prices = tcgplayer.get("prices", {})
 
             card_type_dict = prices.get("holofoil") or prices.get("normal")
 
             market_price = card_type_dict.get("market", 0) if card_type_dict else 0
 
             collection_value += (market_price * item.quantity)
-
 
     return {
         "total_cards": total_cards,

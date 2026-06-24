@@ -88,7 +88,7 @@
 
         <div class="card shadow">
 
-            <div class="card-header bg-warming">
+            <div class="card-header bg-warning">
                 🏆 Most Owned Card
             </div>
 
@@ -100,7 +100,13 @@
                          class="mb-3"
                     >
 
-                    <h5>{{ most_owned_card_data.name }}</h5>
+                    <a
+                        href="{{ url_for('cards.card_detail', card_id=most_owned_card.card_id) }}"
+                        class="text-decoration-none"
+                    >
+                        <h5>{{ most_owned_card_data.name }}</h5>
+                    </a>
+
                     <p>{{ most_owned_card.quantity }} copies</p>
 
                     <a href="{{ url_for('cards.card_detail', card_id=most_owned_card.card_id) }}"
@@ -141,6 +147,10 @@
 
                 <a href="{{ url_for('collection.my_collection') }}" class="btn btn-outline-success">
                     My Collection
+                </a>
+
+                <a href="{{ url_for('progress.index') }}" class="btn btn-outline-dark">
+                    My Collection Progress
                 </a>
 
                 <a href="{{ url_for('favorite.favorite_cards') }}" class="btn btn-outline-danger">

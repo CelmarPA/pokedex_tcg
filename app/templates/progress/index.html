@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %} - Collection Progress{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Collection Progress</h2>
+
+{% for set in sets %}
+
+    <div class="card mb-3">
+
+        <div class="card-body">
+            <h5>
+                {{ set.set_name }}
+            </h5>
+
+            <p>
+                {{ set.owned }} / {{ set.total }} cards
+            </p>
+
+            <div class="progress">
+
+                <div
+                    class="progress-bar"
+                    role="progressbar"
+                    style="width: {{ set.progress }}%"
+                >
+                    {{ set.progress }}%
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+{% endfor %}
+
+{% endblock %}

@@ -42,4 +42,7 @@ def create_app(config_class=Config) -> Flask:
     from .statistics import statistics as statistics_blueprint
     app.register_blueprint(statistics_blueprint, url_prefix="/statistics")
 
+    from .progress import progress as progress_blueprint
+    app.register_blueprint(progress_blueprint, url_prefix="/progress")
+
     return app

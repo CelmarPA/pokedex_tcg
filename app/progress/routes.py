@@ -1,0 +1,12 @@
+from flask import render_template
+from flask_login import login_required, current_user
+from . import progress
+from .services import get_collection_progress
+
+
+@progress.route("/")
+@login_required
+def index():
+    sets = get_collection_progress(current_user)
+
+    return render_template("progress/index.html", sets=sets)
