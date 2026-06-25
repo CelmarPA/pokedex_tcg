@@ -45,4 +45,7 @@ def create_app(config_class=Config) -> Flask:
     from .progress import progress as progress_blueprint
     app.register_blueprint(progress_blueprint, url_prefix="/progress")
 
+    from .activity import activity as activity_blueprint
+    app.register_blueprint(activity_blueprint, url_prefi="/activity")
+
     return app

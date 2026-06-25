@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .collection import Collection
     from .favorite import Favorite
     from .wishlist import Wishlist
+    from .activity import Activity
 
 
 class User(UserMixin, db.Model):
@@ -25,6 +26,7 @@ class User(UserMixin, db.Model):
     collections: Mapped[list["Collection"]] = relationship(back_populates="user")
     favorites: Mapped[list["Favorite"]] = relationship(back_populates="user")
     wishlists: Mapped[list["Wishlist"]] = relationship(back_populates="user")
+    activities: Mapped[list["Activity"]] = relationship(back_populates="user")
 
     @property
     def password(self) -> None:

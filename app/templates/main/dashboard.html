@@ -167,6 +167,57 @@
 
     </div>
 
+    <div class="card shadow mt-4">
+
+        <div class="card-header">
+            🕒 Recent Activity
+        </div>
+
+        <div class="card-body">
+
+            {% if recent_activities %}
+
+                <ul class="list-group list-group-flush">
+
+                    {% for activity in recent_activities %}
+
+                        <li class="list-group-item">
+
+                            {% if activity.action == "collection_add" %}
+                                📚 Added {{ activity.card_name }} to collection
+
+                            {% elif activity.action == "collection_remove" %}
+                                🗑️ Removed {{ activity.card_name }} from collection
+
+                            {% elif activity.action == "favorite_add" %}
+                                ⭐ Added {{ activity.card_name }} to favorites
+
+                            {% elif activity.action == "favorite_remove" %}
+                                💔 Removed {{ activity.card_name }} from favorites
+
+                            {% elif activity.action == "wishlist_add" %}
+                                🎯 Added {{ activity.card_name }} to wishlist
+
+                            {% elif activity.action == "wishlist_remove" %}
+                                ❌ Removed {{ activity.card_name }} from wishlist
+                            {% endif %}
+                        
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <p>No recent activity.</p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
 </div>
 
 {% endblock %}

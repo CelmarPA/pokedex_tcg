@@ -6,19 +6,7 @@
 
 <h2 class="mb-4">Pokédex TCG Cards</h2>
 
-<form method="GET" class="mb-4">
-
-    <div class="input-group">
-
-        <input type="text" name="search" class="form-control" placeholder="Search cards..." value="{{ search }}">
-
-        <button type="submit" class="btn btn-danger">
-            Search
-        </button>
-
-    </div>
-
-</form>
+{% include "partials/search_bar.html" %}
 
 <div class="row">
 

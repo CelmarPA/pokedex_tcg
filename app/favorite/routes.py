@@ -3,7 +3,8 @@ from flask_login import login_required, current_user
 from . import favorite
 from ..models import Favorite
 from ..extensions import db
-from ..cards.services import get_card
+from ..cards.services import get_card, get_card_smart
+from ..activity.services import log_activity
 
 
 @favorite.route("/toggle/<card_id>", methods=["POST"])
@@ -16,11 +17,19 @@ def toggle_favorite(card_id: str):
     ).first()
 
     if favorite_card:
+
         db.session.delete(favorite_card)
 
-        flash("You've removed this card from your favorites!", "success")
+        log_activity(
+            current_user.id,
+            card_id,
+            "favorite_remove"
+        )
+
+        message = "Card removed from favorites."
 
     else:
+
         favorite_card = Favorite(
             user_id=current_user.id,
             card_id=card_id
@@ -28,9 +37,17 @@ def toggle_favorite(card_id: str):
 
         db.session.add(favorite_card)
 
-        flash("Card added to favorites!", "success")
+        log_activity(
+            current_user.id,
+            card_id,
+            "favorite_add"
+        )
+
+        message = "Card added to favorites."
 
     db.session.commit()
+
+    flash(message, "success")
 
     if request.referrer:
         return redirect(request.referrer)
@@ -41,11 +58,28 @@ def toggle_favorite(card_id: str):
 @favorite.route("/favorite_cards", methods=["GET"])
 @login_required
 def favorite_cards():
+
+    search = request.args.get("search", "").strip().lower()
+
     favorites = []
 
-    for card_favorite in current_user.favorites:
+    for item in current_user.favorites:
+
+        card_data = get_card_smart(item.card_id)
+
+        if not card_data:
+            continue
+
+        if search and search not in card_data.get("name", "").lower():
+            continue
+
         favorites.append({
-            "card": get_card(card_favorite.card_id)
+            "card": card_data
         })
 
-    return render_template("favorite/index.html", favorites=favorites)
+    return render_template(
+        "favorite/index.html",
+        favorites=favorites,
+        search=search
+
+    )

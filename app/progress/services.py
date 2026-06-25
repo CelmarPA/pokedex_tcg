@@ -10,14 +10,19 @@ def get_collection_progress(user):
 
         set_id = card["set"]["id"]
 
+        set_images = card["set"]["images"]
+
         if set_id not in progress:
             progress[set_id] = {
                 "set_id": set_id,
                 "set_name": card["set"]["name"],
                 "series": card["set"]["series"],
                 "owned": 0,
-                "total": card["set"]["printedTotal"]
+                "total": card["set"]["printedTotal"],
+                "symbol": set_images["symbol"],
+                "logo": set_images["logo"]
             }
+
 
         progress[set_id]["owned"] += 1
 

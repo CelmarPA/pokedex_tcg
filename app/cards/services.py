@@ -1,5 +1,8 @@
 import os
 import requests
+from datetime import datetime, UTC
+from app.models import CardCache
+from ..extensions import db
 
 
 API_URL = "https://api.pokemontcg.io/v2/cards"
@@ -42,3 +45,31 @@ def get_card(card_id: str):
     response.raise_for_status()
 
     return response.json()["data"]
+
+
+def get_card_smart(card_id: str):
+
+    cached = CardCache.query.get(card_id)
+
+    # 1. try cache in the database
+    if cached:
+        return cached.data
+
+    # 2. fallback API
+    card = get_card(card_id)
+
+    if not card:
+        return None
+
+    # save in cache
+    cache = CardCache(
+        id=card_id,
+        name=card.get("name"),
+        data=card,
+        updated_at=datetime.now(UTC)
+    )
+
+    db.session.add(cache)
+    db.session.commit()
+
+    return card

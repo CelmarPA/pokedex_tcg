@@ -4,6 +4,8 @@ from . import main
 from .forms import EditProfileForm
 from .. import db
 from ..statistics.services import get_user_statistics
+from ..models import Activity
+from ..cards.services import get_card_smart
 
 
 @main.route("/")
@@ -48,7 +50,27 @@ def dashboard():
 
     stats = get_user_statistics(current_user)
 
+    recent_activities = Activity.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        Activity.created_at.desc()
+    ).limit(10).all()
+
+    print(recent_activities)
+
+    activities = []
+
+    for activity in recent_activities:
+        card = get_card_smart(activity.card_id)
+
+        activities.append({
+            "action": activity.action,
+            "card_name": card["name"],
+            "created-at": activity.created_at
+        })
+
     return render_template(
         "main/dashboard.html",
+        recent_activities=activities,
         **stats
     )
