@@ -1,4 +1,4 @@
-from ..cards.services import get_card
+from ..cards.services import get_card_smart
 
 
 
@@ -6,7 +6,7 @@ def get_collection_progress(user):
     progress = {}
 
     for item in user.collections:
-        card = get_card(item.card_id)
+        card = get_card_smart(item.card_id)
 
         set_id = card["set"]["id"]
 

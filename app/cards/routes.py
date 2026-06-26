@@ -1,7 +1,7 @@
 from flask import render_template, request
 from flask_login import current_user
 from . import cards
-from .services import get_cards, get_card
+from .services import get_cards, get_card_smart
 from ..models import Collection, Favorite, Wishlist
 
 
@@ -16,7 +16,7 @@ def index():
 
 @cards.route("/<card_id>", methods=["GET"])
 def card_detail(card_id: str):
-    card_data = get_card(card_id)
+    card_data = get_card_smart(card_id)
 
     if current_user.is_authenticated:
         collection_card = Collection.query.filter_by(

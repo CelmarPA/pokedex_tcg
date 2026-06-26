@@ -1,5 +1,5 @@
 from datetime import datetime, UTC
-from sqlalchemy import String, JSON, DateTime
+from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..extensions import db

@@ -80,6 +80,49 @@
 
 </div>
 
+<!-- CARD CHARTS -->
+<div class="row mt-4">
+
+    <!-- BAR -->
+    <div class="col-lg-6 mb-4">
+
+        <div class="card shadow h-100">
+
+            <div class="card-header">
+                📊 Cards by Type
+            </div>
+
+            <div class="card-body chart-box">
+
+                <canvas id="typesChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PIE -->
+    <div class="col-lg-6 mb-4">
+
+        <div class="card shadow h-100">
+
+            <div class="card-header">
+                🥧 Collection by Rarity
+            </div>
+
+            <div class="card-body chart-box">
+
+                <canvas id="rarityChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <!-- MAIN CONTENT -->
 <div class="row mt-4">
 
@@ -167,6 +210,7 @@
 
     </div>
 
+    <!-- RECENT ACTIVITIES -->
     <div class="card shadow mt-4">
 
         <div class="card-header">
@@ -218,6 +262,262 @@
 
     </div>
 
+    <!-- COLLECTION PROGRESS -->
+    <div class="row mt-4">
+
+        <div class="col-12">
+
+            <div class="card shadow">
+
+                <div class="card-header">
+                    📚 Collection Progress
+                </div>
+
+                <div class="card-body">
+
+                    {% if collection_progress %}
+
+                        <div class="row">
+
+                            {% for set in collection_progress %}
+
+                                <div class="col-lg-6 mb-3">
+
+                                    <div class="card h-100 border-0 shadow-sm">
+
+                                        <div class="card-body">
+
+                                            <div class="d-flex align-items-center mb-3">
+
+                                                <img
+                                                    src="{{ set.symbol }}"
+                                                    alt="{{ set.set_name }}"
+                                                    style="width:40px;"
+                                                    class="me-3"
+                                                >
+
+                                                <div>
+
+                                                    <h6 class="mb-0">
+                                                        {{ set.set_name }}
+                                                    </h6>
+
+                                                    <small class="text-muted">
+                                                        {{ set.owned }} / {{ set.total }} cards
+                                                    </small>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="progress">
+
+                                                <div
+                                                    class="progress-bar bg-success"
+                                                    role="progressbar"
+                                                    style="width: {{ set.progress }}%;"
+                                                >
+
+                                                    {{ "%.1f"|format(set.progress) }}%
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="text-muted mb-0">
+                            Your collection is empty.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FAVORITE POKÉMON TYPES -->
+    <div class="row mt-4">
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-header">
+
+                    🔥 Favorite Pokémon Types
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if favorite_types %}
+
+                        <ul class="list-group list-group-flush">
+
+                            {% for item in favorite_types %}
+
+                                <li class="list-group-item d-flex justify-content-between">
+
+                                    <strong>{{ item.type }}</strong>
+
+                                    <span class="badge bg-primary rounded-pill">
+                                        {{ item.count }}
+                                    </span>
+
+                                </li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    {% else %}
+
+                        <p class="text-muted mb-0">
+                            No Pokémon types found.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-header">
+                    💎 Collection by Rarity
+                </div>
+
+                <div class="card-body">
+
+                    {% if collection_rarity %}
+
+                        <ul class="list-group list-group-flush">
+
+                            {% for item in collection_rarity %}
+
+                                <li class="list-group-item d-flex justify-content-between">
+
+                                    <strong>{{ item.rarity }}</strong>
+
+                                    <span class="badge bg-success rounded-pill">
+                                        {{ item.count }}
+                                    </span>
+
+                                </li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    {% else %}
+
+                        <p class="text-muted mb-0">
+                            No rarity data found.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+const typeLabels = {{ type_labels|tojson }};
+const typeValues = {{ type_values|tojson }};
+
+new Chart(
+    document.getElementById("typesChart"),
+    {
+        type: "bar",
+        data: {
+            labels: typeLabels,
+            datasets: [{
+                label: "Cards",
+                data: typeValues,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    }
+);
+
+const rarityLabels = {{ rarity_labels|tojson }};
+const rarityValues = {{ rarity_values|tojson }};
+
+new Chart(
+    document.getElementById("rarityChart"),
+    {
+        type: "pie",
+        data: {
+            labels: rarityLabels,
+            datasets: [{
+                label: "Cards",
+                data: rarityValues,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    }
+);
+
+</script>
 
 {% endblock %}

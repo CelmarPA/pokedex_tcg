@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from . import favorite
 from ..models import Favorite
 from ..extensions import db
-from ..cards.services import get_card, get_card_smart
+from ..cards.services import get_card_smart
 from ..activity.services import log_activity
 
 

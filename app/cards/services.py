@@ -12,7 +12,7 @@ HEADERS = {
 }
 
 
-def get_cards(search=None, page_size=50):
+def get_cards(search=None, page_size=20):
     search = search.strip()
 
     params = {
