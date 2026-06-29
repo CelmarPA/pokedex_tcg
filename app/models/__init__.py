@@ -4,3 +4,4 @@ from .favorite import Favorite
 from .wishlist import Wishlist
 from .activity import Activity
 from .cardcache import CardCache
+from .achievement import Achievement

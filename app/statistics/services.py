@@ -1,10 +1,11 @@
 # app/statistics/services.py
 from collections import defaultdict, Counter
 from ..cards.services import get_card_smart
-
+from ..collection.services import get_collection_value
 
 
 def get_user_statistics(user):
+
     total_cards = sum(card.quantity for card in user.collections)
 
     unique_cards = len(user.collections)
@@ -16,9 +17,10 @@ def get_user_statistics(user):
     most_owned_card = None
     most_owned_card_data = None
 
-    collection_value = 0
+    collection_value = get_collection_value(user)
 
     if user.collections:
+
         most_owned_card = max(
             user.collections,
             key=lambda card: card.quantity
@@ -26,22 +28,6 @@ def get_user_statistics(user):
 
         if most_owned_card:
             most_owned_card_data = get_card_smart(most_owned_card.card_id)
-
-        for item in user.collections:
-            card_data = get_card_smart(item.card_id)
-
-            tcgplayer = card_data.get("tcgplayer")
-
-            if not tcgplayer:
-                continue
-
-            prices = tcgplayer.get("prices", {})
-
-            card_type_dict = prices.get("holofoil") or prices.get("normal")
-
-            market_price = card_type_dict.get("market", 0) if card_type_dict else 0
-
-            collection_value += (market_price * item.quantity)
 
     return {
         "total_cards": total_cards,

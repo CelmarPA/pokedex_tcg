@@ -1,7 +1,7 @@
 from flask import render_template
 from flask_login import login_required, current_user
 from . import progress
-from .services import get_collection_progress
+from ..collection.services import get_collection_progress
 
 
 @progress.route("/")

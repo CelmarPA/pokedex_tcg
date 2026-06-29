@@ -48,4 +48,7 @@ def create_app(config_class=Config) -> Flask:
     from .activity import activity as activity_blueprint
     app.register_blueprint(activity_blueprint, url_prefi="/activity")
 
+    from .achievement import achievement as achievement_blueprint
+    app.register_blueprint(achievement_blueprint, url_prefix="/achievement")
+
     return app

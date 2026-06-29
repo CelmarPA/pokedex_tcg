@@ -2,6 +2,8 @@ from datetime import datetime, UTC
 from flask_login import UserMixin
 from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.models.achievement import Achievement
 from ..extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from typing import TYPE_CHECKING
@@ -27,6 +29,7 @@ class User(UserMixin, db.Model):
     favorites: Mapped[list["Favorite"]] = relationship(back_populates="user")
     wishlists: Mapped[list["Wishlist"]] = relationship(back_populates="user")
     activities: Mapped[list["Activity"]] = relationship(back_populates="user")
+    achievements: Mapped[list["Achievement"]] = relationship(back_populates="user")
 
     @property
     def password(self) -> None:

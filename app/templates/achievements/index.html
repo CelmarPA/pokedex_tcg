@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %} - Achievements{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    🏆 Achievements
+</h2>
+
+<!-- SUMMARY -->
+<div class="card shadow mb-4">
+
+    <div class="card-body">
+
+        <h5>
+            Progress
+        </h5>
+
+        <p class="mb-2">
+
+            <strong>{{ unlocked }}</strong>
+            /
+            {{ total }}
+            achievements unlocked
+
+        </p>
+
+        <div class="progress">
+
+            <div
+                class="progress-bar bg-success"
+                role="progressbar"
+                style="width: {{ progress }}%"
+            >
+
+                {{ "%.1f"|format(progress) }}%
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ACHIEVEMENTS -->
+<div class="row">
+
+{% for achievement in achievements %}
+
+<div class="col-lg-6 mb-4">
+
+    <div class="card h-100 shadow-sm
+        {% if achievement.unlocked %}
+            border-success
+        {% else %}
+            border-secondary opacity-75
+        {% endif %}
+    ">
+
+        <div class="card-body">
+
+            <div class="d-flex align-items-center">
+
+                <div class="display-4 me-3">
+
+                    {{ achievement.icon }}
+
+                </div>
+
+                <div>
+
+                    <h5 class="mb-1">
+
+                        {{ achievement.title }}
+
+                    </h5>
+
+                    <p class="mb-2">
+
+                        {{ achievement.description }}
+
+                    </p>
+
+                    {% if achievement.unlocked %}
+
+                        <span class="badge bg-success">
+
+                            ✓ Unlocked
+
+                        </span>
+
+                        <div class="small text-muted mt-2">
+
+                            {{ achievement.unlocked_at.strftime("%d/%m/%Y") }}
+
+                        </div>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+
+                            🔒 Locked
+
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<div class="mt-4">
+
+    <a
+        href="{{ url_for('main.dashboard') }}"
+        class="btn btn-secondary"
+    >
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+{% endblock %}

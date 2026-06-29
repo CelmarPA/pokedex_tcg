@@ -20,3 +20,20 @@
     width: 100% !important;
     height: 100% !important;
 }
+
+.btn-achievement {
+    color: #ffc107; /* Amarelo ouro */
+    border-color: #ffc107;
+    background-color: transparent;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-achievement:hover {
+    color: #000;
+    background-color: #ffc107;
+    border-color: #ffc107;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.6); /* Efeito de brilho */
+    transform: translateY(-1px); /* Leve levantamento */
+}

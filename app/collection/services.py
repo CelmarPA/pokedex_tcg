@@ -1,6 +1,28 @@
 from ..cards.services import get_card_smart
 
 
+def get_collection_value(user):
+
+    collection_value = 0
+
+    for item in user.collections:
+        card_data = get_card_smart(item.card_id)
+
+        tcgplayer = card_data.get("tcgplayer")
+
+        if not tcgplayer:
+            continue
+
+        prices = tcgplayer.get("prices", {})
+
+        card_type_dict = prices.get("holofoil") or prices.get("normal")
+
+        market_price = card_type_dict.get("market", 0) if card_type_dict else 0
+
+        collection_value += (market_price * item.quantity)
+
+    return collection_value
+
 
 def get_collection_progress(user):
     progress = {}
