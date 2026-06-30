@@ -1,0 +1,101 @@
+<!-- templates/components/search_form.html -->
+<form method="GET" class="row g-3 mb-4">
+
+    <div class="col-md-4">
+
+        <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search..."
+            value="{{ filters.search }}"
+        >
+
+    </div>
+
+    <div class="col-md-2">
+
+        <select name="type" class="form-select">
+
+            <option value="">All Types</option>
+
+            {% for type in filter_options.types %}
+
+                <option
+                    value="{{ type }}"
+                    {% if filters.type == type %}selected{% endif %}
+                >
+                    {{ type }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-md-2">
+
+        <select name="rarity" class="form-select">
+
+            <option value="">All Rarities</option>
+
+            {% for rarity in filter_options.rarities %}
+
+                <option
+                    value="{{ rarity }}"
+                    {% if filters.rarity == rarity %}selected{% endif %}
+                >
+                    {{ rarity }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-md-2">
+
+        <select name="supertype" class="form-select">
+
+            <option value="">All Supertypes</option>
+
+            {% for supertype in filter_options.supertypes %}
+
+                <option
+                    value="{{ supertype }}"
+                    {% if filters.supertype == supertype %}selected{% endif %}
+                >
+                    {{ supertype }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-md-2">
+
+        <div class="d-grid gap-2">
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                🔍 Search
+            </button>
+
+            <a
+                href="{{ request.path }}"
+                class="btn btn-outline-secondary"
+            >
+                🗑 Clear Filters
+            </a>
+
+        </div>
+
+    </div>
+
+</form>

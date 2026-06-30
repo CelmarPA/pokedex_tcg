@@ -7,6 +7,7 @@ from ..statistics.services import get_user_statistics
 from ..models import Activity
 from ..cards.services import get_card_smart
 from ..statistics.services import get_collection_progress, get_favorite_types, get_collection_rarity
+from ..achievement.services import get_user_achievements_progress
 
 
 @main.route("/")
@@ -51,6 +52,8 @@ def dashboard():
 
     stats = get_user_statistics(current_user)
 
+    achievements_progress = get_user_achievements_progress(current_user)
+
     collection_progress = get_collection_progress(current_user)[:6]
 
     favorite_types = get_favorite_types(current_user)
@@ -85,6 +88,7 @@ def dashboard():
         "main/dashboard.html",
         recent_activities=activities,
         **stats,
+        **achievements_progress,
         collection_progress=collection_progress,
         favorite_types=favorite_types,
         collection_rarity=collection_rarity,

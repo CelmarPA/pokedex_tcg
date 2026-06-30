@@ -1,22 +1,33 @@
 from flask import render_template, request
 from flask_login import current_user
 from . import cards
-from .services import get_cards, get_card_smart
+from .services import get_cards, get_card_smart,get_card_prices
 from ..models import Collection, Favorite, Wishlist
+from ..search.filters import SearchFilters
+from ..search.services import get_search_context
 
 
 @cards.route("/")
 def index():
-    search = request.args.get("search", "").strip()
+    filters = SearchFilters(request.args)
 
-    cards_data = get_cards(search=search)
+    cards_data = get_cards(filters)
 
-    return render_template("cards/index.html", cards=cards_data, search=search)
+    context = get_search_context()
+
+    return render_template(
+        "cards/index.html",
+        cards=cards_data,
+        filters=filters,
+        **context
+    )
 
 
 @cards.route("/<card_id>", methods=["GET"])
 def card_detail(card_id: str):
     card_data = get_card_smart(card_id)
+
+    prices = get_card_prices(card_data)
 
     if current_user.is_authenticated:
         collection_card = Collection.query.filter_by(
@@ -39,9 +50,12 @@ def card_detail(card_id: str):
         favorite_card = None
         cards_wishlist = None
 
+    print(card_data)
+
     return render_template(
         "cards/detail.html",
         card=card_data,
+        prices=prices,
         collection_card=collection_card,
         favorite_card=favorite_card,
         cards_wishlist=cards_wishlist

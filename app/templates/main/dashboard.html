@@ -80,6 +80,42 @@
 
 </div>
 
+<!-- ACHIEVEMENTS SUMMARY -->
+<div class="card shadow mb-4">
+
+    <div class="card-body">
+
+        <h5>
+            Achievement Progress
+        </h5>
+
+        <p class="mb-2">
+
+            <strong>{{ unlocked }}</strong>
+            /
+            {{ total }}
+            achievements unlocked
+
+        </p>
+
+        <div class="progress">
+
+            <div
+                class="progress-bar bg-success"
+                role="progressbar"
+                style="width: {{ progress }}%"
+            >
+
+                {{ "%.1f"|format(progress) }}%
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <!-- CARD CHARTS -->
 <div class="row mt-4">
 

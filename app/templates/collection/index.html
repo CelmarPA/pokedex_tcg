@@ -6,7 +6,7 @@
 
 <h2>My Collection</h2>
 
-{% include "partials/search_bar.html" %}
+{% include "components/search_form.html" %}
 
 {% if cards %}
     <div class="row">
@@ -72,20 +72,12 @@
 
                         </div>
 
-                    <a
-                        href="{{ url_for('cards.card_detail', card_id=item.card.id) }}"
-                        class="btn btn-primary btn-sm w-100"
-                    >
-                        View Details
-                    </a>
-
-                    <div class="mt-4 d-flex gap-2 align-items-center">
-                        
-                        <a href="{{ url_for('cards.index') }}" class="btn btn-secondary">
-                            ← Back to Cards
+                        <a
+                            href="{{ url_for('cards.card_detail', card_id=item.card.id) }}"
+                            class="btn btn-primary btn-sm w-100"
+                        >
+                            View Details
                         </a>
-
-                    </div>
 
                     </div>
 
@@ -102,5 +94,13 @@
     <p>No cards in your collection</p>
 
 {% endif %}
+
+<div class="mt-4 d-flex gap-2 align-items-center">
+
+    <a href="{{ url_for('cards.index') }}" class="btn btn-secondary">
+        ← Back to Cards
+    </a>
+
+</div>
 
 {% endblock %}

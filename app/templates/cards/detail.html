@@ -235,36 +235,23 @@
                      </h5>
 
                      <p>
-                         <strong>Market: </strong>US$
-                         {{
-                            "%.2f"|format(
-                               card.tcgplayer.prices.get('holofoil', {}).get('market')
-                               or card.tcgplayer.prices.get('normal', {}).get('market')
-                               or 'N/A'
-                            )
-                         }}
+                         <strong>Market: </strong>
+                         US$ {{ "%.2f"|format(prices.market) }}
                      </p>
 
                      <p>
-                         <strong>Lower: </strong>US$
-                         {{
-                            "%.2f"|format(
-                                card.tcgplayer.prices.get('holofoil', {}).get('low')
-                                or card.tcgplayer.prices.get('normal', {}).get('low')
-                                or 0
-                            )
-                        }}
+                         <strong>Lower: </strong>
+                         US$ {{ "%.2f"|format(prices.low) }}
                      </p>
 
                      <p>
-                         <strong>Mid: </strong>US$
-                         {{
-                            "%.2f"|format(
-                                card.tcgplayer.prices.get('holofoil', {}).get('mid')
-                                or card.tcgplayer.prices.get('normal', {}).get('mid')
-                                or 0
-                            )
-                        }}
+                         <strong>Mid: </strong>
+                         US$ {{ "%.2f"|format(prices.mid) }}
+                     </p>
+
+                     <p>
+                         <strong>Higher: </strong>
+                         US$ {{ "%.2f"|format(prices.high) }}
                      </p>
 
                  </div>

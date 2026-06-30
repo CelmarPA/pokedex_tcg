@@ -5,6 +5,8 @@ from ..models import Favorite
 from ..extensions import db
 from ..cards.services import get_card_smart
 from ..activity.services import log_activity
+from ..search.filters import SearchFilters
+from ..search.services import get_search_context
 
 
 @favorite.route("/toggle/<card_id>", methods=["POST"])
@@ -58,8 +60,11 @@ def toggle_favorite(card_id: str):
 @favorite.route("/favorite_cards", methods=["GET"])
 @login_required
 def favorite_cards():
+    filters = SearchFilters(request.args)
 
-    search = request.args.get("search", "").strip().lower()
+    search = (filters.search or "").lower().strip()
+
+    context = get_search_context()
 
     favorites = []
 
@@ -80,6 +85,6 @@ def favorite_cards():
     return render_template(
         "favorite/index.html",
         favorites=favorites,
-        search=search
-
+        filters=filters,
+        **context
     )

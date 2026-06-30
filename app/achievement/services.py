@@ -171,3 +171,21 @@ def get_user_achievements(user):
     )
 
     return achievements
+
+
+def get_user_achievements_progress(user):
+
+    achievements = get_user_achievements(user)
+
+    unlocked = sum(achievement_["unlocked"] for achievement_ in achievements)
+
+    total = len(achievements)
+
+    progress = (unlocked / total * 100) if total else 0
+
+    return {
+        "achievements": achievements,
+        "unlocked": unlocked,
+        "total": total,
+        "progress": progress
+    }

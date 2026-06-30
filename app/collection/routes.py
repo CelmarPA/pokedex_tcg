@@ -5,6 +5,8 @@ from ..models import Collection
 from . import collection
 from ..cards.services import get_card_smart
 from ..activity.services import log_activity
+from ..search.filters import SearchFilters
+from ..search.services import get_search_context
 
 
 @collection.route("/add/<card_id>", methods=["POST"])
@@ -47,7 +49,11 @@ def add_card(card_id: str):
 @collection.route("/my_collection", methods=["GET"])
 @login_required
 def my_collection():
-    search = request.args.get("search", "").strip().lower()
+    filters = SearchFilters(request.args)
+
+    search = (filters.search or "").lower().strip()
+
+    context = get_search_context()
 
     cards = []
 
@@ -58,18 +64,20 @@ def my_collection():
         if not card_data:
             continue
 
-        if search:
-            name = card_data.get("name", "").lower()
-
-            if search not in name:
-                continue
+        if search and search not in card_data.get("name", "").lower():
+            continue
 
         cards.append({
             "card": card_data,
             "quantity": item.quantity
         })
 
-    return render_template("collection/index.html", cards=cards, search=search)
+    return render_template(
+        "collection/index.html",
+        cards=cards,
+        filters=filters,
+        **context
+    )
 
 
 @collection.route("/remove/<card_id>", methods=["POST"])

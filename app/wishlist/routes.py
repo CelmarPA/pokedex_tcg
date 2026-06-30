@@ -5,6 +5,8 @@ from ..extensions import db
 from ..models import Wishlist
 from ..cards.services import get_card, get_card_smart
 from ..activity.services import log_activity
+from ..search.filters import SearchFilters
+from ..search.services import get_search_context
 
 
 @wishlist.route("/toggle/<card_id>", methods=["POST"])
@@ -57,7 +59,11 @@ def toggle_wishlist(card_id: str):
 @login_required
 def my_wishlist():
 
-    search = request.args.get("search", "").strip().lower()
+    filters = SearchFilters(request.args)
+
+    search = (filters.search or "").lower().strip()
+
+    context = get_search_context()
 
     cards_wishlist = []
 
@@ -78,5 +84,6 @@ def my_wishlist():
     return render_template(
         "wishlist/index.html",
         cards_wishlist=cards_wishlist,
-        search=search
+        filters=filters,
+        **context
     )
