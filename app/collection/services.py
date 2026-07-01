@@ -1,4 +1,4 @@
-from ..cards.services import get_card_smart, get_card_prices
+from ..cards.service import card_service
 
 
 def get_collection_value(user):
@@ -6,9 +6,9 @@ def get_collection_value(user):
     collection_value = 0
 
     for item in user.collections:
-        card_data = get_card_smart(item.card_id)
+        card_data = card_service.get_card_smart(item.card_id)
 
-        market_price = get_card_prices(card_data)
+        market_price = card_service.get_market_prices(card_data)
 
         print(market_price)
 
@@ -21,7 +21,7 @@ def get_collection_progress(user):
     progress = {}
 
     for item in user.collections:
-        card = get_card_smart(item.card_id)
+        card = card_service.get_card_smart(item.card_id)
 
         set_id = card["set"]["id"]
 

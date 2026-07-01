@@ -3,10 +3,10 @@ from flask_login import login_required, current_user
 from . import favorite
 from ..models import Favorite
 from ..extensions import db
-from ..cards.services import get_card_smart
+from ..cards.service import card_service
 from ..activity.services import log_activity
 from ..search.filters import SearchFilters
-from ..search.services import get_search_context
+from ..search.service import get_search_context, match_search
 
 
 @favorite.route("/toggle/<card_id>", methods=["POST"])
@@ -62,7 +62,7 @@ def toggle_favorite(card_id: str):
 def favorite_cards():
     filters = SearchFilters(request.args)
 
-    search = (filters.search or "").lower().strip()
+    search = filters.search.casefold()
 
     context = get_search_context()
 
@@ -70,12 +70,12 @@ def favorite_cards():
 
     for item in current_user.favorites:
 
-        card_data = get_card_smart(item.card_id)
+        card_data = card_service.get_card_smart(item.card_id)
 
         if not card_data:
             continue
 
-        if search and search not in card_data.get("name", "").lower():
+        if not match_search(search, card_data.get("name", "")):
             continue
 
         favorites.append({

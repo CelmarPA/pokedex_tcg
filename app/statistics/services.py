@@ -1,6 +1,6 @@
-# app/statistics/services.py
+# app/statistics/service.py
 from collections import defaultdict, Counter
-from ..cards.services import get_card_smart
+from ..cards.service import card_service
 from ..collection.services import get_collection_value
 
 
@@ -27,7 +27,7 @@ def get_user_statistics(user):
         )
 
         if most_owned_card:
-            most_owned_card_data = get_card_smart(most_owned_card.card_id)
+            most_owned_card_data = card_service.get_card_smart(most_owned_card.card_id)
 
     return {
         "total_cards": total_cards,
@@ -46,7 +46,7 @@ def get_collection_progress(user):
 
     for item in user.collections:
 
-        card = get_card_smart(item.card_id)
+        card = card_service.get_card_smart(item.card_id)
 
         set_data = card["set"]
 
@@ -89,7 +89,7 @@ def get_favorite_types(user):
 
     for item in user.collections:
 
-        card = get_card_smart(item.card_id)
+        card = card_service.get_card_smart(item.card_id)
 
         for pokemon_type in card.get("types", []):
 
@@ -110,7 +110,7 @@ def get_collection_rarity(user):
 
     for item in user.collections:
 
-        card = get_card_smart(item.card_id)
+        card = card_service.get_card_smart(item.card_id)
 
         rarity = card.get("rarity", "Unknown")
 

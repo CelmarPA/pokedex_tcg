@@ -47,3 +47,11 @@ def get_search_context():
     return {
         "filter_options": get_filters()
     }
+
+
+def match_search(search, text):
+
+    if not search:
+        return True
+
+    return search.casefold() in text.casefold()

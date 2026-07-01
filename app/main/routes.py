@@ -5,7 +5,7 @@ from .forms import EditProfileForm
 from .. import db
 from ..statistics.services import get_user_statistics
 from ..models import Activity
-from ..cards.services import get_card_smart
+from ..cards.service import card_service
 from ..statistics.services import get_collection_progress, get_favorite_types, get_collection_rarity
 from ..achievement.services import get_user_achievements_progress
 
@@ -69,7 +69,7 @@ def dashboard():
     activities = []
 
     for activity in recent_activities:
-        card = get_card_smart(activity.card_id)
+        card = card_service.get_card_smart(activity.card_id)
 
         activities.append({
             "action": activity.action,

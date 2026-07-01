@@ -3,10 +3,10 @@ from flask_login import current_user, login_required
 from . import wishlist
 from ..extensions import db
 from ..models import Wishlist
-from ..cards.services import get_card, get_card_smart
+from ..cards.service import card_service
 from ..activity.services import log_activity
 from ..search.filters import SearchFilters
-from ..search.services import get_search_context
+from ..search.service import get_search_context, match_search
 
 
 @wishlist.route("/toggle/<card_id>", methods=["POST"])
@@ -61,7 +61,7 @@ def my_wishlist():
 
     filters = SearchFilters(request.args)
 
-    search = (filters.search or "").lower().strip()
+    search = filters.search.casefold()
 
     context = get_search_context()
 
@@ -69,12 +69,12 @@ def my_wishlist():
 
     for item in current_user.wishlists:
 
-        card_data = get_card_smart(item.card_id)
+        card_data = card_service.get_card_smart(item.card_id)
 
         if not card_data:
             continue
 
-        if search and search not in card_data.get("name", "").lower():
+        if not match_search(search, card_data.get("name", "")):
             continue
 
         cards_wishlist.append({
