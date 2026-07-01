@@ -1,7 +1,7 @@
 # app/statistics/service.py
 from collections import defaultdict, Counter
 from ..cards.service import card_service
-from ..collection.services import get_collection_value
+from ..collection.service import collection_service
 
 
 def get_user_statistics(user):
@@ -17,7 +17,7 @@ def get_user_statistics(user):
     most_owned_card = None
     most_owned_card_data = None
 
-    collection_value = get_collection_value(user)
+    collection_value = collection_service.get_collection_value(user)
 
     if user.collections:
 

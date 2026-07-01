@@ -1,6 +1,6 @@
 from ..extensions import db
 from ..models import Achievement, Activity
-from ..collection.services import get_collection_value, get_collection_progress
+from ..collection.service import collection_service
 from .definitions import ACHIEVEMENTS
 
 
@@ -74,7 +74,7 @@ def check_wishlist(user):
 
 def check_sets(user):
 
-    progress  = get_collection_progress(user)
+    progress  = collection_service.get_collection_progress(user)
 
     completed_sets = sum(1 for set_data in progress if set_data["progress"] == 100)
 
@@ -90,7 +90,7 @@ def check_sets(user):
 
 def check_collection_value(user):
 
-    value = get_collection_value(user)
+    value = collection_service.get_collection_value(user)
 
     if value >= 500:
         unlock(user, "VALUABLE_COLLECTION")
