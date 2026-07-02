@@ -3,19 +3,19 @@ from flask_login import login_required, current_user
 from . import favorite
 from .service import favorite_service
 from ..search.filters import SearchFilters
-from ..search.service import get_search_context
+from ..search.service import search_service
 
 
 @favorite.route("/toggle/<card_id>", methods=["POST"])
 @login_required
 def toggle_favorite(card_id: str):
 
-    added = favorite_service.toggle(
+    result = favorite_service.toggle(
         user=current_user,
         card_id=card_id
     )
 
-    if added:
+    if result.added:
         message = "Card added to favorites."
 
     else:
@@ -34,7 +34,7 @@ def toggle_favorite(card_id: str):
 def favorite_cards():
     filters = SearchFilters(request.args)
 
-    context = get_search_context()
+    context = search_service.get_search_context()
 
     favorites = favorite_service.get_favorites(current_user, filters)
 

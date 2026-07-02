@@ -1,12 +1,13 @@
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
+
+from .service import collection_service
 from .. import db
 from ..models import Collection
 from . import collection
-from ..cards.service import card_service
-from ..activity.services import log_activity
+from ..activity.service import activity_service
 from ..search.filters import SearchFilters
-from ..search.service import get_search_context, match_search
+from ..search.service import search_service
 
 
 @collection.route("/add/<card_id>", methods=["POST"])
@@ -30,7 +31,7 @@ def add_card(card_id: str):
     else:
         card.quantity += 1
 
-    log_activity(
+    activity_service.log_activity(
         current_user.id,
         card_id,
         "collection_add"
@@ -51,26 +52,9 @@ def add_card(card_id: str):
 def my_collection():
     filters = SearchFilters(request.args)
 
-    search = filters.search.casefold()
+    context = search_service.get_search_context()
 
-    context = get_search_context()
-
-    cards = []
-
-    for item in current_user.collections:
-
-        card_data = card_service.get_card_smart(item.card_id)
-
-        if not card_data:
-            continue
-
-        if not match_search(search, card_data.get("name", "")):
-            continue
-
-        cards.append({
-            "card": card_data,
-            "quantity": item.quantity
-        })
+    cards = collection_service.get_collection(current_user, filters)
 
     return render_template(
         "collection/index.html",
@@ -100,7 +84,7 @@ def remove_card(card_id: str):
     else:
         card.quantity -= 1
 
-    log_activity(
+    activity_service.log_activity(
         current_user.id,
         card_id,
         "collection_remove"

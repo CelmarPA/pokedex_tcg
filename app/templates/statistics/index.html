@@ -13,7 +13,7 @@
             <div class="card-body text-center">
                 <h5>Total Cards</h5>
                 <p class="display-6">
-                    {{ total_cards }}
+                    {{ stats.total_cards }}
                 </p>
             </div>
         </div>
@@ -24,7 +24,7 @@
             <div class="card-body text-center">
                 <h5>Unique Cards</h5>
                 <p class="display-6">
-                    {{ unique_cards }}
+                    {{ stats.unique_cards }}
                 </p>
             </div>
         </div>
@@ -35,7 +35,7 @@
             <div class="card-body text-center">
                 <h5>Favorites</h5>
                 <p class="display-6">
-                    {{ favorite_count }}
+                    {{ stats.favorite_count }}
                 </p>
             </div>
         </div>
@@ -46,7 +46,7 @@
             <div class="card-body text-center">
                 <h5>Wishlist</h5>
                 <p class="display-6">
-                    {{ wishlist_count }}
+                    {{ stats.wishlist_count }}
                 </p>
             </div>
         </div>
@@ -57,7 +57,7 @@
             <div class="card-body text-center">
                 <h5>Collection Value</h5>
                 <p class="display-6">
-                    ${{ "%.2f"|format(collection_value) }}
+                    ${{ "%.2f"|format(stats.collection_value) }}
                 </p>
             </div>
         </div>
@@ -73,27 +73,27 @@
 
     <div class="card-body text-center">
 
-        {% if most_owned_card %}
+        {% if stats.most_owned_card %}
 
             <img
-                src="{{ most_owned_card_data.images.small }}"
+                src="{{ stats.most_owned_card_data.images.small }}"
                 class="img-fluid mb-3"
                 style="max-width: 200px;"
-                alt="{{ most_owned_card_data.name }}"
+                alt="{{ stats.most_owned_card_data.name }}"
             >
 
             <p>
                 <strong>Name:</strong>
-                {{ most_owned_card_data.name }}
+                {{ stats.most_owned_card_data.name }}
             </p>
 
             <p>
                 <strong>Copies:</strong>
-                {{ most_owned_card.quantity }}
+                {{ stats.most_owned_card.quantity }}
             </p>
 
             <a
-                href="{{ url_for('cards.card_detail', card_id=most_owned_card.card_id) }}"
+                href="{{ url_for('cards.card_detail', card_id=stats.most_owned_card.card_id) }}"
                 class="btn btn-primary btn-sm"
             >
                 View Details

@@ -2,7 +2,7 @@ from flask import redirect, url_for, flash, request, render_template
 from flask_login import current_user, login_required
 from . import wishlist
 from ..search.filters import SearchFilters
-from ..search.service import get_search_context
+from ..search.service import search_service
 from .service import wishlist_service
 
 
@@ -10,12 +10,12 @@ from .service import wishlist_service
 @login_required
 def toggle_wishlist(card_id: str):
 
-    added = wishlist_service.toggle(
+    result = wishlist_service.toggle(
         user=current_user,
         card_id=card_id
     )
 
-    if added:
+    if result.added:
         message = "Card added to wishlist."
 
     else:
@@ -36,9 +36,9 @@ def my_wishlist():
 
     filters = SearchFilters(request.args)
 
-    context = get_search_context()
+    context = search_service.get_search_context()
 
-    cards_wishlist = wishlist_service.get_my_wishlist(current_user, filters)
+    cards_wishlist = wishlist_service.get_wishlist(current_user, filters)
 
     return render_template(
         "wishlist/index.html",

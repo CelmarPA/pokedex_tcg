@@ -1,5 +1,6 @@
 from ..cards.service import card_service
-from .results import CollectionProgress
+from .results import CollectionProgress, CollectionCard
+from ..search.service import search_service
 
 
 class CollectionService:
@@ -13,7 +14,7 @@ class CollectionService:
 
             market_price = card_service.get_market_prices(card_data)
 
-            collection_value += (market_price["market"] * item.quantity)
+            collection_value += (market_price.market * item.quantity)
 
         return collection_value
 
@@ -53,6 +54,29 @@ class CollectionService:
             key=lambda x: x.progress,
             reverse=True
         )
+
+    def get_collection(self, user,filters):
+
+        search = filters.search
+
+        cards_collection = []
+
+        for item in user.collections:
+
+            card_data = card_service.get_card_smart(item.card_id)
+
+            if not card_data:
+                continue
+
+            if not search_service.match_search(search, card_data.get("name", "")):
+                continue
+
+            cards_collection.append(CollectionCard(
+                card=card_data,
+                quantity=item.quantity
+            ))
+
+        return cards_collection
 
 
 collection_service = CollectionService()

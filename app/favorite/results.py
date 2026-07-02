@@ -5,3 +5,9 @@ from dataclasses import dataclass
 class ToggleResult:
 
     added: bool
+
+
+@dataclass(slots=True)
+class FavoriteCard:
+
+    card: dict

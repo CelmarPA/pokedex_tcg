@@ -7,55 +7,55 @@
 
 <div class="row">
 
-    {% if not card %}
+    {% if not details.card_data %}
         <div class="alert alert-warning">
             No card found.
         </div>
     {% endif %}
 
     <div class="col-md-4 text-center">
-        <img src="{{ card['images']['large'] }}"
-             alt="{{ card['name'] }}"
+        <img src="{{ details.card_data['images']['large'] }}"
+             alt="{{ details.card_data['name'] }}"
              class="img-fluid rounded shadow card-detail-image">
     </div>
 
     <div class="col-md-8">
 
         <h2>
-            {{ card["name"] }}
+            {{ details.card_data["name"] }}
         </h2>
 
         <p>
             <strong>Artist:</strong>
-            {{ card.get("artist", "Unknown") }}
+            {{ details.card_data.get("artist", "Unknown") }}
         </p>
 
         <p>
             <strong>Card Number:</strong>
-            {{ card["number"] }}
+            {{ details.card_data["number"] }}
         </p>
 
         <p>
             <strong>Card ID:</strong>
-            {{ card["id"] }}
+            {{ details.card_data["id"] }}
         </p>
 
-        {% if card.get("supertype") == "Pokémon" %}
+        {% if details.card_data.get("supertype") == "Pokémon" %}
 
             <p>
                 <strong>HP:</strong>
-                {{ card.get("hp", "?") }}
+                {{ details.card_data.get("hp", "?") }}
             </p>
 
             <p>
                 <strong>Type:</strong>
-                {{ card.get("types", ["Unknown"])[0] }}
+                {{ details.card_data.get("types", ["Unknown"])[0] }}
             </p>
 
-            {% if card.get("evolvesFrom") %}
+            {% if details.card_data.get("evolvesFrom") %}
                 <p>
                     <strong>Evolves From:</strong>
-                    {{ card["evolvesFrom"] }}
+                    {{ details.card_data["evolvesFrom"] }}
                 </p>
             {% endif %}
 
@@ -63,37 +63,37 @@
 
         <p>
             <strong>Rarity:</strong>
-            {{ card.get("rarity", "Unknown") }}
+            {{ details.card_data.get("rarity", "Unknown") }}
         </p>
 
         <p>
             <strong>Set:</strong>
-            {{ card["set"]["name"] }}
+            {{ details.card_data["set"]["name"] }}
         </p>
 
         <p>
             <strong>Class:</strong>
-            {{ card["supertype"] }}
+            {{ details.card_data["supertype"] }}
         </p>
 
     </div>
 
 </div>
 
-{% if card.get("flavorText") %}
+{% if details.card_data.get("flavorText") %}
     <div class="mt-4">
         <h4>Flavor Text</h4>
         <p>
-            {{ card["flavorText"] }}
+            {{ details.card_data["flavorText"] }}
         </p>
     </div>
 {% endif %}
 
-{% if card.get("attacks") %}
+{% if details.card_data.get("attacks") %}
 
     <h4 class="mt-4">Attacks</h4>
 
-    {% for attack in card["attacks"] %}
+    {% for attack in details.card_data["attacks"] %}
 
         <div class="card mb-3">
 
@@ -123,13 +123,13 @@
     {% endfor %}
 {% endif %}
 
-{% if card.get("weaknesses") %}
+{% if details.card_data.get("weaknesses") %}
 
     <h4 class="mt-4">Weaknesses</h4>
 
     <div class="row">
 
-        {% for weakness in card["weaknesses"] %}
+        {% for weakness in details.card_data["weaknesses"] %}
 
             <div class="col-md-4 mb-3">
 
@@ -158,13 +158,13 @@
 
 {% endif %}
 
-{% if card.get("resistances") %}
+{% if details.card_data.get("resistances") %}
 
     <h4 class="mt-14">Resistances</h4>
 
     <div class="row">
 
-        {% for resistance in card["resistances"] %}
+        {% for resistance in details.card_data["resistances"] %}
 
             <div class="col-md-4 mb-3">
 
@@ -193,11 +193,11 @@
 
 {% endif %}
 
-{% if card.get("rules") %}
+{% if details.card_data.get("rules") %}
 
     <h4 class="mt-4">Rules</h4>
 
-    {% for rule in card["rules"] %}
+    {% for rule in details.card_data["rules"] %}
 
         <div class="card mb-3">
 
@@ -215,12 +215,12 @@
 
 {% endif %}
 
-<a href="{{ card.tcgplayer.url }}" style="text-decoration: none; color: inherit;" target="_blank">
+<a href="{{ details.card_data.tcgplayer.url }}" style="text-decoration: none; color: inherit;" target="_blank">
     <h4 class="mt-4">TCGPlayer</h4>
 </a>
 
 
-<a href="{{ card.tcgplayer.url }}" class="text-decoration-none" target="_blank">
+<a href="{{ details.card_data.tcgplayer.url }}" class="text-decoration-none" target="_blank">
 
      <div class="row">
 
@@ -236,22 +236,22 @@
 
                      <p>
                          <strong>Market: </strong>
-                         US$ {{ "%.2f"|format(prices.market) }}
+                         US$ {{ "%.2f"|format(details.prices.market) }}
                      </p>
 
                      <p>
                          <strong>Lower: </strong>
-                         US$ {{ "%.2f"|format(prices.low) }}
+                         US$ {{ "%.2f"|format(details.prices.low) }}
                      </p>
 
                      <p>
                          <strong>Mid: </strong>
-                         US$ {{ "%.2f"|format(prices.mid) }}
+                         US$ {{ "%.2f"|format(details.prices.mid) }}
                      </p>
 
                      <p>
                          <strong>Higher: </strong>
-                         US$ {{ "%.2f"|format(prices.high) }}
+                         US$ {{ "%.2f"|format(details.prices.high) }}
                      </p>
 
                  </div>
@@ -276,18 +276,18 @@
 
         <div class="col-md-4 mb-3">
 
-            <div class="card h-100 shadow-sm {% if collection_card %}border-success{% else %}border-secondary{% endif %}">
+            <div class="card h-100 shadow-sm {% if details.collection_card %}border-success{% else %}border-secondary{% endif %}">
 
                 <div class="card-body">
 
-                    {% if collection_card %}
+                    {% if details.collection_card %}
 
                         <p class="mb-1 text-success fw-semibold">
                             ✓ In your collection
                         </p>
 
                         <p class="mb-0">
-                            You own <strong>{{ collection_card.quantity }}</strong> copy(ies)
+                            You own <strong>{{ details.collection_card.quantity }}</strong> copy(ies)
                         </p>
 
                     {% else %}
@@ -316,11 +316,11 @@
 
         <div class="col-md-4 mb-3">
 
-            <div class="card h-100 shadow-sm {% if favorite_card %}border-success{% else %}border-secondary{% endif %}">
+            <div class="card h-100 shadow-sm {% if details.favorite_card %}border-success{% else %}border-secondary{% endif %}">
 
                 <div class="card-body">
 
-                    {% if favorite_card %}
+                    {% if details.favorite_card %}
 
                         <p class="mb-1 text-success fw-semibold">
                             ★ In your favorites
@@ -347,11 +347,11 @@
     <div class="row">
         <div class="col-md-4 mb-3">
 
-            <div class="card h-100 shadow-sm {% if cards_wishlist %}border-success{% else %}border-secondary{% endif %}">
+            <div class="card h-100 shadow-sm {% if details.cards_wishlist %}border-success{% else %}border-secondary{% endif %}">
 
                 <div class="card-body">
 
-                    {% if cards_wishlist %}
+                    {% if details.cards_wishlist %}
 
                         <p class="mb-1 text-success fw-semibold">
                             ★ In your wishlist
@@ -374,15 +374,15 @@
 
 <div class="mt-4 d-flex gap-2 align-items-center">
 
-    <form action="{{ url_for('collection.add_card', card_id=card['id']) }}" method="POST">
+    <form action="{{ url_for('collection.add_card', card_id=details.card_data['id']) }}" method="POST">
         <button type="submit" class="btn btn-outline-info">
             Add to Collection
         </button>
     </form>
 
-    {% if not favorite_card %}
+    {% if not details.favorite_card %}
 
-        <form action="{{ url_for('favorite.toggle_favorite', card_id=card['id']) }}" method="POST">
+        <form action="{{ url_for('favorite.toggle_favorite', card_id=details.card_data['id']) }}" method="POST">
             <button type="submit" class="btn btn-outline-info">
                 ☆ Add Favorite
             </button>
@@ -390,7 +390,7 @@
 
     {% else %}
 
-        <form action="{{ url_for('favorite.toggle_favorite', card_id=card['id']) }}" method="POST">
+        <form action="{{ url_for('favorite.toggle_favorite', card_id=details.card_data['id']) }}" method="POST">
             <button type="submit" class="btn btn-outline-danger">
                 ★ Remove Favorite
             </button>
@@ -398,9 +398,9 @@
 
     {% endif %}
 
-    {% if not cards_wishlist %}
+    {% if not details.cards_wishlist %}
 
-        <form action="{{ url_for('wishlist.toggle_wishlist', card_id=card['id']) }}" method="POST">
+        <form action="{{ url_for('wishlist.toggle_wishlist', card_id=details.card_data['id']) }}" method="POST">
             <button class="btn btn-outline-info">
                 ☆ Add To Wishlist
             </button>
@@ -408,7 +408,7 @@
 
     {% else %}
 
-        <form action="{{ url_for('wishlist.toggle_wishlist', card_id=card['id']) }}" method="POST">
+        <form action="{{ url_for('wishlist.toggle_wishlist', card_id=details.card_data['id']) }}" method="POST">
             <button class="btn btn-outline-danger">
                 ★ Remove From Wishlist
             </button>

@@ -15,6 +15,3 @@ class Pagination:
         self.next_page = page + 1 if self.has_next else None
         self.first_page = 1
         self.last_page = self.total_pages
-
-    def get_total_pages(self):
-        return

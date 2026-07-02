@@ -3,11 +3,7 @@ from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileForm
 from .. import db
-from ..statistics.services import get_user_statistics
-from ..models import Activity
-from ..cards.service import card_service
-from ..statistics.services import get_collection_progress, get_favorite_types, get_collection_rarity
-from ..achievement.services import get_user_achievements_progress
+from .service import dashboard_service
 
 
 @main.route("/")
@@ -50,50 +46,9 @@ def edit_profile():
 @login_required
 def dashboard():
 
-    stats = get_user_statistics(current_user)
-
-    achievements_progress = get_user_achievements_progress(current_user)
-
-    collection_progress = get_collection_progress(current_user)[:6]
-
-    favorite_types = get_favorite_types(current_user)
-
-    collection_rarity = get_collection_rarity(current_user)
-
-    recent_activities = Activity.query.filter_by(
-        user_id=current_user.id
-    ).order_by(
-        Activity.created_at.desc()
-    ).limit(10).all()
-
-    activities = []
-
-    for activity in recent_activities:
-        card = card_service.get_card_smart(activity.card_id)
-
-        activities.append({
-            "action": activity.action,
-            "card_name": card["name"],
-            "created-at": activity.created_at
-        })
-
-    type_labels = [item["type"] for item in favorite_types]
-    type_values = [item["count"] for item in favorite_types]
-
-    rarity_labels = [item["rarity"] for item in collection_rarity]
-    rarity_values = [item["count"] for item in collection_rarity]
-
+    dashboard_data = dashboard_service.get_dashboard_data(current_user)
 
     return render_template(
         "main/dashboard.html",
-        recent_activities=activities,
-        **stats,
-        **achievements_progress,
-        collection_progress=collection_progress,
-        favorite_types=favorite_types,
-        collection_rarity=collection_rarity,
-        type_labels=type_labels,
-        type_values=type_values,
-        rarity_labels=rarity_labels,
-        rarity_values=rarity_values
+        dashboard_data=dashboard_data
     )

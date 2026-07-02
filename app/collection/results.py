@@ -12,3 +12,11 @@ class CollectionProgress:
     symbol: str
     logo: str
     progress: float = 0
+
+
+@dataclass(slots=True)
+class CollectionCard:
+
+    card: dict
+    quantity: int
+

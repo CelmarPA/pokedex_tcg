@@ -1,9 +1,9 @@
 from ..models import Favorite
 from ..extensions import db
-from ..activity.services import log_activity
+from ..activity.service import activity_service
 from ..cards.service import card_service
-from .results import ToggleResult
-from ..search.service import match_search
+from .results import ToggleResult, FavoriteCard
+from ..search.service import search_service
 
 
 class FavoriteService:
@@ -33,7 +33,7 @@ class FavoriteService:
             added = True
             action = "favorite_add"
 
-        log_activity(
+        activity_service.log_activity(
             user_id=user.id,
             card_id=card_id,
             action=action
@@ -47,7 +47,7 @@ class FavoriteService:
 
     def get_favorites(self, user, filters):
 
-        search = filters.search.casefold()
+        search = filters.search
 
         favorites = []
 
@@ -58,12 +58,12 @@ class FavoriteService:
             if not card_data:
                 continue
 
-            if not match_search(search, card_data.get("name", "")):
+            if not search_service.match_search(search, card_data.get("name", "")):
                 continue
 
-            favorites.append({
-                "card": card_data
-            })
+            favorites.append(FavoriteCard(
+                card=card_data
+            ))
 
         return favorites
 

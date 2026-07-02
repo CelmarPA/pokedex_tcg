@@ -19,9 +19,9 @@
 
         <p class="mb-2">
 
-            <strong>{{ unlocked }}</strong>
+            <strong>{{ ach_progress.unlocked }}</strong>
             /
-            {{ total }}
+            {{ ach_progress.total }}
             achievements unlocked
 
         </p>
@@ -34,7 +34,7 @@
                 style="width: {{ progress }}%"
             >
 
-                {{ "%.1f"|format(progress) }}%
+                {{ "%.1f"|format(ach_progress.progress) }}%
 
             </div>
 
@@ -47,7 +47,7 @@
 <!-- ACHIEVEMENTS -->
 <div class="row">
 
-{% for achievement in achievements %}
+{% for achievement in ach_progress.achievements %}
 
 <div class="col-lg-6 mb-4">
 

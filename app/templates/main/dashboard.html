@@ -25,7 +25,7 @@
             <div class="card-body">
 
                 <h6>Total Cards</h6>
-                <h3>{{ total_cards }}</h3>
+                <h3>{{ dashboard_data.stats.total_cards }}</h3>
 
             </div>
 
@@ -40,7 +40,7 @@
             <div class="card-body">
 
                 <h6>Favorites</h6>
-                <h3>{{ favorite_count }}</h3>
+                <h3>{{ dashboard_data.stats.favorite_count }}</h3>
 
             </div>
 
@@ -55,7 +55,7 @@
             <div class="card-body">
 
                 <h6>Wishlist</h6>
-                <h3>{{ wishlist_count }}</h3>
+                <h3>{{ dashboard_data.stats.wishlist_count }}</h3>
 
             </div>
 
@@ -70,7 +70,7 @@
             <div class="card-body">
 
                 <h6>Value</h6>
-                <h3>${{ "%.2f"|format(collection_value) }}</h3>
+                <h3>${{ "%.2f"|format(dashboard_data.stats.collection_value) }}</h3>
 
             </div>
 
@@ -91,9 +91,9 @@
 
         <p class="mb-2">
 
-            <strong>{{ unlocked }}</strong>
+            <strong>{{ dashboard_data.ach_progress.unlocked }}</strong>
             /
-            {{ total }}
+            {{ dashboard_data.ach_progress.total }}
             achievements unlocked
 
         </p>
@@ -106,7 +106,7 @@
                 style="width: {{ progress }}%"
             >
 
-                {{ "%.1f"|format(progress) }}%
+                {{ "%.1f"|format(dashboard_data.ach_progress.progress) }}%
 
             </div>
 
@@ -172,23 +172,23 @@
             </div>
 
             <div class="card-body text-center">
-                {% if most_owned_card %}
+                {% if dashboard_data.stats.most_owned_card %}
 
-                    <img src="{{ most_owned_card_data.images.small }}"
+                    <img src="{{ dashboard_data.stats.most_owned_card_data.images.small }}"
                          style="max-width:150px;"
                          class="mb-3"
                     >
 
                     <a
-                        href="{{ url_for('cards.card_detail', card_id=most_owned_card.card_id) }}"
+                        href="{{ url_for('cards.card_detail', card_id=dashboard_data.stats.most_owned_card.card_id) }}"
                         class="text-decoration-none"
                     >
-                        <h5>{{ most_owned_card_data.name }}</h5>
+                        <h5>{{ dashboard_data.stats.most_owned_card_data.name }}</h5>
                     </a>
 
-                    <p>{{ most_owned_card.quantity }} copies</p>
+                    <p>{{ dashboard_data.stats.most_owned_card.quantity }} copies</p>
 
-                    <a href="{{ url_for('cards.card_detail', card_id=most_owned_card.card_id) }}"
+                    <a href="{{ url_for('cards.card_detail', card_id=dashboard_data.stats.most_owned_card.card_id) }}"
                        class="btn btn-primary btn-sm">
                         View
                     </a>
@@ -259,11 +259,11 @@
 
         <div class="card-body">
 
-            {% if recent_activities %}
+            {% if dashboard_data.recent_activities %}
 
                 <ul class="list-group list-group-flush">
 
-                    {% for activity in recent_activities %}
+                    {% for activity in dashboard_data.recent_activities %}
 
                         <li class="list-group-item">
 
@@ -315,11 +315,11 @@
 
                 <div class="card-body">
 
-                    {% if collection_progress %}
+                    {% if dashboard_data.collection_progress %}
 
                         <div class="row">
 
-                            {% for set in collection_progress %}
+                            {% for set in dashboard_data.collection_progress %}
 
                                 <div class="col-lg-6 mb-3">
 
@@ -405,11 +405,11 @@
 
                 <div class="card-body">
 
-                    {% if favorite_types %}
+                    {% if dashboard_data.favorite_types %}
 
                         <ul class="list-group list-group-flush">
 
-                            {% for item in favorite_types %}
+                            {% for item in dashboard_data.favorite_types %}
 
                                 <li class="list-group-item d-flex justify-content-between">
 
@@ -449,11 +449,11 @@
 
                 <div class="card-body">
 
-                    {% if collection_rarity %}
+                    {% if dashboard_data.collection_rarity %}
 
                         <ul class="list-group list-group-flush">
 
-                            {% for item in collection_rarity %}
+                            {% for item in dashboard_data.collection_rarity %}
 
                                 <li class="list-group-item d-flex justify-content-between">
 
@@ -493,8 +493,8 @@
 
 <script>
 
-const typeLabels = {{ type_labels|tojson }};
-const typeValues = {{ type_values|tojson }};
+const typeLabels = {{ dashboard_data.type_labels|tojson }};
+const typeValues = {{ dashboard_data.type_values|tojson }};
 
 new Chart(
     document.getElementById("typesChart"),
@@ -530,8 +530,8 @@ new Chart(
     }
 );
 
-const rarityLabels = {{ rarity_labels|tojson }};
-const rarityValues = {{ rarity_values|tojson }};
+const rarityLabels = {{ dashboard_data.rarity_labels|tojson }};
+const rarityValues = {{ dashboard_data.rarity_values|tojson }};
 
 new Chart(
     document.getElementById("rarityChart"),

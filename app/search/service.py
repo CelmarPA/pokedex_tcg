@@ -1,57 +1,64 @@
-from .contants import (
+from .constants import (
     CARD_TYPES,
     CARD_SUPERTYPES,
     CARD_RARITIES
 )
 
 
-def build_query(filters):
+class SearchService:
 
-    query = []
+    def __init__(self):
+        self.card_types = CARD_TYPES
+        self.card_supertypes = CARD_SUPERTYPES
+        self.card_rarities = CARD_RARITIES
 
-    # Search by name
-    if filters.search:
+    def build_query(self, filters):
 
-        if " " in filters.search:
-            query.append(f'name:"{filters.search}"')
+        query = []
 
-        else:
-            query.append(f"name:*{filters.search}*")
+        # Search by name
+        if filters.search:
 
-    # Filter by type
-    if filters.type:
-        query.append(f'types:"{filters.type}"')
+            if " " in filters.search:
+                query.append(f'name:"{filters.search}"')
 
-    # Filter by rarity
-    if filters.rarity:
-        query.append(f'rarity:"{filters.rarity}"')
+            else:
+                query.append(f"name:*{filters.search}*")
 
-    # Filter by supertype
-    if filters.supertype:
-        query.append(f'supertype:"{filters.supertype}"')
+        # Filter by type
+        if filters.type:
+            query.append(f'types:"{filters.type}"')
 
-    return " ".join(query)
+        # Filter by rarity
+        if filters.rarity:
+            query.append(f'rarity:"{filters.rarity}"')
+
+        # Filter by supertype
+        if filters.supertype:
+            query.append(f'supertype:"{filters.supertype}"')
+
+        return " ".join(query)
+
+    def get_filters(self):
+
+        return {
+            "types": self.card_types,
+            "rarities": self.card_rarities,
+            "supertypes": self.card_supertypes
+        }
+
+    def get_search_context(self, ):
+
+        return {
+            "filter_options": self.get_filters()
+        }
+
+    def match_search(self, search, text):
+
+        if not search:
+            return True
+
+        return search.casefold() in text.casefold()
 
 
-def get_filters():
-
-    return {
-        "types": CARD_TYPES,
-        "rarities": CARD_RARITIES,
-        "supertypes": CARD_SUPERTYPES
-    }
-
-
-def get_search_context():
-
-    return {
-        "filter_options": get_filters()
-    }
-
-
-def match_search(search, text):
-
-    if not search:
-        return True
-
-    return search.casefold() in text.casefold()
+search_service = SearchService()

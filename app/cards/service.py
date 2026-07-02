@@ -2,14 +2,15 @@ import requests
 import os
 from datetime import datetime, UTC
 from app.models import CardCache
+from .results import CardDetail, MarketPrices
 from ..extensions import db
 from ..search.pagination import Pagination
 from ..search.results import CardSearchResult
-from ..search.service import build_query
-# from ..search.service import search_service
+from ..search.service import search_service
+from ..models import Collection, Favorite, Wishlist
+
 
 class CardService:
-
 
     def __init__(self):
         self.api_url = "https://api.pokemontcg.io/v2/cards"
@@ -25,14 +26,10 @@ class CardService:
             "pageSize": filters.page_size
         }
 
-        if filters:
+        query = search_service.build_query(filters)
 
-            query = build_query(filters)
-
-            # query = search_service.build_query(filters)
-
-            if query:
-                params["q"] = query
+        if query:
+            params["q"] = query
 
         response = requests.get(
             self.api_url,
@@ -132,12 +129,47 @@ class CardService:
             if price_data.get("high") is not None:
                 high.append(price_data["high"])
 
-        return {
-            "market": max(market) if market else 0,
-            "low": min(low) if low else 0,
-            "mid": max(mid) if mid else 0,
-            "high": max(high) if high else 0
-        }
+        return MarketPrices(
+            market=max(market) if market else 0,
+            low=min(low) if low else 0,
+            mid=max(mid) if mid else 0,
+            high=max(high) if high else 0
+        )
+
+    def get_card_detail(self, user, card_id):
+
+        card_data = self.get_card_smart(card_id)
+
+        prices = self.get_market_prices(card_data)
+
+        if user.is_authenticated:
+            collection_card = Collection.query.filter_by(
+                user_id=user.id,
+                card_id=card_id
+            ).first()
+
+            favorite_card = Favorite.query.filter_by(
+                user_id=user.id,
+                card_id=card_id
+            ).first()
+
+            cards_wishlist = Wishlist.query.filter_by(
+                user_id=user.id,
+                card_id=card_id
+            ).first()
+
+        else:
+            collection_card = None
+            favorite_card = None
+            cards_wishlist = None
+
+        return CardDetail(
+            card_data=card_data,
+            prices=prices,
+            collection_card=collection_card,
+            favorite_card=favorite_card,
+            cards_wishlist=cards_wishlist,
+        )
 
 
 card_service = CardService()
