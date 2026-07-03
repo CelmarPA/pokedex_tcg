@@ -67,5 +67,9 @@ class FavoriteService:
 
         return favorites
 
+    def get_favorite_count(self, user):
+
+        return len(user.favorites)
+
 
 favorite_service = FavoriteService()

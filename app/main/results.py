@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from ..statistics.results import Statistics
+from ..statistics.results import Statistics, ChartData
 from ..achievement.results import AchievementsProgress
 
 
@@ -12,7 +12,5 @@ class Dashboard:
     collection_progress: list
     favorite_types: list
     collection_rarity: list
-    type_labels: list
-    type_values: list
-    rarity_labels: list
-    rarity_values: list
+    type_chart: ChartData
+    rarity_chart: ChartData

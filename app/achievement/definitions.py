@@ -1,3 +1,6 @@
+from .rules import AchievementRule
+
+
 ACHIEVEMENTS = {
 
     # =========================
@@ -143,3 +146,45 @@ ACHIEVEMENTS = {
     },
 
 }
+
+
+COLLECTOR_RULES = (
+    AchievementRule(1, "FIRST_CARD"),
+    AchievementRule(100, "COLLECTOR_100"),
+    AchievementRule(500, "MASTER_COLLECTOR"),
+    AchievementRule(1000, "LEGENDARY_COLLECTOR"),
+)
+
+
+FAVORITE_RULES = (
+    AchievementRule(1, "FIRST_FAVORITE"),
+    AchievementRule(25, "FAVORITE_TRAINER"),
+    AchievementRule(100, "FAVORITE_MASTER")
+)
+
+
+WISHLIST_RULES = (
+    AchievementRule(1, "FIRST_WISHLIST"),
+    AchievementRule(50, "WISHLIST_BUILDER"),
+    AchievementRule(150, "MASTER_WISHLIST")
+)
+
+
+SET_RULES = (
+    AchievementRule(1, "FIRST_SET"),
+    AchievementRule(5, "SET_COLLECTOR"),
+    AchievementRule(10, "MASTER_SET_COLLECTOR")
+)
+
+
+VALUE_RULES = (
+    AchievementRule(500, "VALUABLE_COLLECTION"),
+    AchievementRule(1000, "MILLIONAIRE"),
+    AchievementRule(5000, "INVESTOR")
+)
+
+
+ACTIVITY_RULES = (
+    AchievementRule(100, "ACTIVE_TRAINER"),
+    AchievementRule(500, "DEDICATED_TRAINER")
+)

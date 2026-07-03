@@ -66,4 +66,8 @@ class WishlistService:
 
         return cards_wishlist
 
+    def get_wishlist_count(self, user):
+
+        return len(user.wishlists)
+
 wishlist_service = WishlistService()

@@ -1,9 +1,68 @@
 from ..cards.service import card_service
 from .results import CollectionProgress, CollectionCard
 from ..search.service import search_service
+from ..models import Collection
+from ..extensions import db
+from ..activity.service import activity_service
 
 
 class CollectionService:
+
+    def add_card_to_collection(self, user, card_id):
+
+        card = Collection.query.filter_by(
+            user_id=user.id,
+            card_id=card_id
+        ).first()
+
+        if not card:
+            card = Collection(
+                user_id=user.id,
+                card_id=card_id,
+                quantity=1
+            )
+
+            db.session.add(card)
+
+        else:
+            card.quantity += 1
+
+        activity_service.log_activity(
+            user.id,
+            card_id,
+            "collection_add"
+        )
+
+        db.session.commit()
+
+    def remove_card_from_collection(self, user, card_id):
+
+        card = Collection.query.filter_by(
+            user_id=user.id,
+            card_id=card_id
+        ).first()
+
+        if not card:
+            return None
+
+        removed_last_copy = (card.quantity == 1)
+
+        if removed_last_copy:
+            db.session.delete(card)
+
+        else:
+            card.quantity -= 1
+
+
+        activity_service.log_activity(
+            user.id,
+            card_id,
+            "collection_remove"
+        )
+
+        db.session.commit()
+
+        return removed_last_copy
 
     def get_collection_value(self, user):
 
@@ -77,6 +136,14 @@ class CollectionService:
             ))
 
         return cards_collection
+
+    def get_total_cards(self, user):
+
+        return sum(item.quantity for item in user.collections)
+
+    def get_unique_cards(self, user):
+
+        return len(user.collections)
 
 
 collection_service = CollectionService()

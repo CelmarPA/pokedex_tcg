@@ -1,14 +1,21 @@
+from ..activity.service import activity_service
 from ..extensions import db
-from ..models import Achievement, Activity
+from ..models import Achievement
 from ..collection.service import collection_service
-from .definitions import ACHIEVEMENTS
+from .definitions import (
+    ACHIEVEMENTS,
+    COLLECTOR_RULES,
+    FAVORITE_RULES,
+    WISHLIST_RULES,
+    SET_RULES,
+    VALUE_RULES,
+    ACTIVITY_RULES
+)
 from .results import Achievements, AchievementsProgress
 
+
 class AchievementService:
-
-    def __init__(self):
-        self.achievements = ACHIEVEMENTS
-
+  
     def has_achievement(self, user, achievement_key):
 
         return Achievement.query.filter_by(
@@ -30,89 +37,85 @@ class AchievementService:
 
         return True
 
-    def check_collectors(self, user):
+    def _unlock_if(self, user, value, required, achievement_key):
 
-        total_cards = sum(card.quantity for card in user.collections)
+        if value >= required:
+            self.unlock(user, achievement_key)
 
-        if total_cards >= 1:
-            self.unlock(user, "FIRST_CARD")
+    def _process_rules(self, user, value, rules):
 
-        if total_cards >= 100:
-            self.unlock(user, "COLLECTOR_100")
+        for rule in rules:
 
-        if total_cards >= 500:
-            self.unlock(user, "MASTER_COLLECTOR")
+            self._unlock_if(
+                user=user,
+                value=value,
+                required=rule.required,
+                achievement_key=rule.key
+            )
 
-        if total_cards >= 1000:
-            self.unlock(user, "LEGENDARY_COLLECTOR")
+    def _check_collectors(self, user):
 
-    def check_favorites(self, user):
+        total_cards = collection_service.get_total_cards(user)
 
-        total_favorites = len(user.favorites)
+        self._process_rules(
+            user=user,
+            value=total_cards,
+            rules=COLLECTOR_RULES
+        )
 
-        if total_favorites >= 1:
-            self.unlock(user, "FIRST_FAVORITE")
+    def _check_favorites(self, user):
 
-        if total_favorites >= 25:
-            self.unlock(user, "FAVORITE_TRAINER")
+        self._process_rules(
+            user=user,
+            value=len(user.favorites),
+            rules=FAVORITE_RULES
+        )
 
-        if total_favorites >= 100:
-            self.unlock(user, "FAVORITE_MASTER")
+    def _check_wishlist(self, user):
 
-    def check_wishlist(self, user):
+        self._process_rules(
+            user=user,
+            value=len(user.wishlists),
+            rules=WISHLIST_RULES
+        )
 
-        total_wishlists = len(user.wishlists)
-
-        if total_wishlists >= 1:
-            self.unlock(user, "FIRST_WISHLIST")
-
-        if total_wishlists >= 50:
-            self.unlock(user, "WISHLIST_BUILDER")
-
-        if total_wishlists >= 150:
-            self.unlock(user, "MASTER_WISHLIST")
-
-    def check_sets(self, user):
+    def _check_sets(self, user):
 
         progress = collection_service.get_collection_progress(user)
 
-        completed_sets = sum(1 for set_data in progress if set_data.progress == 100)
+        completed_sets = sum(
+            1
+            for set_data in progress
+            if set_data.progress == 100
+        )
 
-        if completed_sets >= 1:
-            self.unlock(user, "FIRST_SET")
+        self._process_rules(
+            user=user,
+            value=completed_sets,
+            rules=SET_RULES
+        )
 
-        if completed_sets >= 5:
-            self.unlock(user, "SET_COLLECTOR")
-
-        if completed_sets >= 10:
-            self.unlock(user, "MASTER_SET_COLLECTOR")
-
-    def check_collection_value(self, user):
+    def _check_collection_value(self, user):
 
         value = collection_service.get_collection_value(user)
 
-        if value >= 500:
-            self.unlock(user, "VALUABLE_COLLECTION")
+        self._process_rules(
+            user=user,
+            value=value,
+            rules=VALUE_RULES
+        )
 
-        if value >= 1000:
-            self.unlock(user, "MILLIONAIRE")
+    def _check_activity(self, user):
 
-        if value >= 5000:
-            self.unlock(user, "INVESTOR")
+        total = activity_service.get_total(user)
 
-    def check_activity(self, user):
+        self._process_rules(
+            user=user,
+            value=total,
+            rules=ACTIVITY_RULES
+        )
 
-        total_activities = Activity.query.filter_by(
-            user_id=user.id
-        ).count()
-
-        if total_activities >= 100:
-            self.unlock(user, "ACTIVE_TRAINER")
-
-        if total_activities >= 500:
-            self.unlock(user, "DEDICATED_TRAINER")
-
-    def check_special(self, user):
+    def _check_special(self, user):
 
         total_achievements = len(ACHIEVEMENTS) - 1  # Without POKEDEX_MASTER
 
@@ -122,19 +125,19 @@ class AchievementService:
             self.unlock(user, "POKEDEX_MASTER")
 
     def check_achievements(self, user):
-        self.check_collectors(user)
+        self._check_collectors(user)
 
-        self.check_favorites(user)
+        self._check_favorites(user)
 
-        self.check_wishlist(user)
+        self._check_wishlist(user)
 
-        self.check_sets(user)
+        self._check_sets(user)
 
-        self.check_collection_value(user)
+        self._check_collection_value(user)
 
-        self.check_activity(user)
+        self._check_activity(user)
 
-        self.check_special(user)
+        self._check_special(user)
 
     def get_user_achievements(self, user):
 

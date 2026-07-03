@@ -172,23 +172,23 @@
             </div>
 
             <div class="card-body text-center">
-                {% if dashboard_data.stats.most_owned_card %}
+                {% if dashboard_data.stats.most_owned %}
 
-                    <img src="{{ dashboard_data.stats.most_owned_card_data.images.small }}"
+                    <img src="{{ dashboard_data.stats.most_owned.card_data.images.small }}"
                          style="max-width:150px;"
                          class="mb-3"
                     >
 
                     <a
-                        href="{{ url_for('cards.card_detail', card_id=dashboard_data.stats.most_owned_card.card_id) }}"
+                        href="{{ url_for('cards.card_detail', card_id=dashboard_data.stats.most_owned.card_data.id) }}"
                         class="text-decoration-none"
                     >
-                        <h5>{{ dashboard_data.stats.most_owned_card_data.name }}</h5>
+                        <h5>{{ dashboard_data.stats.most_owned.card_data.name }}</h5>
                     </a>
 
-                    <p>{{ dashboard_data.stats.most_owned_card.quantity }} copies</p>
+                    <p>{{ dashboard_data.stats.most_owned.collection.quantity }} copies</p>
 
-                    <a href="{{ url_for('cards.card_detail', card_id=dashboard_data.stats.most_owned_card.card_id) }}"
+                    <a href="{{ url_for('cards.card_detail', card_id=dashboard_data.stats.most_owned.card_data.id) }}"
                        class="btn btn-primary btn-sm">
                         View
                     </a>
@@ -493,8 +493,8 @@
 
 <script>
 
-const typeLabels = {{ dashboard_data.type_labels|tojson }};
-const typeValues = {{ dashboard_data.type_values|tojson }};
+const typeLabels = {{ dashboard_data.type_chart.labels|tojson }};
+const typeValues = {{ dashboard_data.type_chart.values|tojson }};
 
 new Chart(
     document.getElementById("typesChart"),
@@ -530,8 +530,8 @@ new Chart(
     }
 );
 
-const rarityLabels = {{ dashboard_data.rarity_labels|tojson }};
-const rarityValues = {{ dashboard_data.rarity_values|tojson }};
+const rarityLabels = {{ dashboard_data.rarity_chart.labels|tojson }};
+const rarityValues = {{ dashboard_data.rarity_chart.values|tojson }};
 
 new Chart(
     document.getElementById("rarityChart"),

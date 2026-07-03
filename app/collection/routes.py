@@ -14,30 +14,7 @@ from ..search.service import search_service
 @login_required
 def add_card(card_id: str):
 
-    card = Collection.query.filter_by(
-        user_id=current_user.id,
-        card_id=card_id
-    ).first()
-
-    if not card:
-        card = Collection(
-            user_id=current_user.id,
-            card_id=card_id,
-            quantity=1
-        )
-
-        db.session.add(card)
-
-    else:
-        card.quantity += 1
-
-    activity_service.log_activity(
-        current_user.id,
-        card_id,
-        "collection_add"
-    )
-
-    db.session.commit()
+    collection_service.add_card_to_collection(current_user, card_id)
 
     flash("Card added to collection!", "success")
 
@@ -45,6 +22,29 @@ def add_card(card_id: str):
         return redirect(request.referrer)
 
     return redirect(url_for("cards.card_detail", card_id=card_id))
+
+
+@collection.route("/remove/<card_id>", methods=["POST"])
+@login_required
+def remove_card(card_id: str):
+
+    result = collection_service.remove_card_from_collection(
+        current_user,
+        card_id
+    )
+
+    if result is None:
+        flash("Card not found in your collection.", "warning")
+
+        return redirect(url_for("collection.my_collection"))
+
+    if result:
+        flash("Card removed from your collection.", "success")
+
+    else:
+        flash("One copy removed from your collection.", "success")
+
+    return redirect(url_for("collection.my_collection"))
 
 
 @collection.route("/my_collection", methods=["GET"])
@@ -62,39 +62,3 @@ def my_collection():
         filters=filters,
         **context
     )
-
-
-@collection.route("/remove/<card_id>", methods=["POST"])
-@login_required
-def remove_card(card_id: str):
-
-    card = Collection.query.filter_by(
-        user_id=current_user.id,
-        card_id=card_id
-    ).first()
-
-    if not card:
-        flash("Card not found in your collection.", "warning")
-        return redirect(url_for("collection.my_collection"))
-
-    removed_last_copy = card.quantity == 1
-
-    if removed_last_copy:
-        db.session.delete(card)
-    else:
-        card.quantity -= 1
-
-    activity_service.log_activity(
-        current_user.id,
-        card_id,
-        "collection_remove"
-    )
-
-    db.session.commit()
-
-    if removed_last_copy:
-        flash("Card removed from your collection.", "success")
-    else:
-        flash("One copy removed from your collection.", "success")
-
-    return redirect(url_for("collection.my_collection"))

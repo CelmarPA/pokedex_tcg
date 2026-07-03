@@ -1,3 +1,5 @@
+from ..activity.results import ActivitySummary
+from ..activity.service import activity_service
 from ..models import Activity
 from ..cards.service import card_service
 from ..statistics.service import statistics_service
@@ -6,7 +8,6 @@ from .results import Dashboard
 
 
 class DashboardService:
-
 
     def get_dashboard_data(self, user):
 
@@ -20,28 +21,11 @@ class DashboardService:
 
         collection_rarity = statistics_service.get_collection_rarity(user)
 
-        recent_activities = Activity.query.filter_by(
-            user_id=user.id
-        ).order_by(
-            Activity.created_at.desc()
-        ).limit(10).all()
+        types_chart = statistics_service.get_types_chart(user)
 
-        activities = []
+        rarity_chart = statistics_service.get_rarity_chart(user)
 
-        for activity in recent_activities:
-            card = card_service.get_card_smart(activity.card_id)
-
-            activities.append({
-                "action": activity.action,
-                "card_name": card["name"],
-                "created-at": activity.created_at
-            })
-
-        type_labels = [item["type"] for item in favorite_types]
-        type_values = [item["count"] for item in favorite_types]
-
-        rarity_labels = [item["rarity"] for item in collection_rarity]
-        rarity_values = [item["count"] for item in collection_rarity]
+        activities = activity_service.get_recent_summary(user)
 
         return Dashboard(
             recent_activities=activities,
@@ -50,10 +34,8 @@ class DashboardService:
             collection_progress=collection_progress,
             favorite_types=favorite_types,
             collection_rarity=collection_rarity,
-            type_labels=type_labels,
-            type_values=type_values,
-            rarity_labels=rarity_labels,
-            rarity_values=rarity_values,
+            type_chart=types_chart,
+            rarity_chart=rarity_chart,
         )
 
 
