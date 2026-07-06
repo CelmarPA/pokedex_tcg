@@ -1,3 +1,5 @@
+# app/models/user.py
+
 from datetime import datetime, UTC
 from flask_login import UserMixin
 from sqlalchemy import Integer, String, DateTime
@@ -13,6 +15,7 @@ if TYPE_CHECKING:
     from .favorite import Favorite
     from .wishlist import Wishlist
     from .activity import Activity
+    from .deck import Deck
 
 
 class User(UserMixin, db.Model):
@@ -30,6 +33,7 @@ class User(UserMixin, db.Model):
     wishlists: Mapped[list["Wishlist"]] = relationship(back_populates="user")
     activities: Mapped[list["Activity"]] = relationship(back_populates="user")
     achievements: Mapped[list["Achievement"]] = relationship(back_populates="user")
+    decks: Mapped[list["Deck"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     @property
     def password(self) -> None:

@@ -5,3 +5,5 @@ from .wishlist import Wishlist
 from .activity import Activity
 from .cardcache import CardCache
 from .achievement import Achievement
+from .deck import Deck
+from .deckcard import DeckCard

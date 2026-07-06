@@ -15,3 +15,25 @@ class Pagination:
         self.next_page = page + 1 if self.has_next else None
         self.first_page = 1
         self.last_page = self.total_pages
+
+    @property
+    def visible_pages(self):
+
+        pages = [1]
+
+        start = max(2, self.current_page - 2)
+        end = min(self.total_pages - 1, self.current_page + 2)
+
+        if start > 2:
+            pages.append(None)
+
+        for page in range(start, end + 1):
+            pages.append(page)
+
+        if end < self.total_pages - 1:
+            pages.append(None)
+
+        if self.total_pages > 1:
+            pages.append(self.total_pages)
+
+        return pages

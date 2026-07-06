@@ -14,6 +14,8 @@ def index():
 
     context = search_service.get_search_context()
 
+    print(result.pagination)
+
     return render_template(
         "cards/index.html",
         cards=result.cards,
