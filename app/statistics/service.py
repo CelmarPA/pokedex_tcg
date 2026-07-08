@@ -59,20 +59,25 @@ class StatisticsService:
 
         collection = max(
             user.collections,
-            key=lambda card: card.quantity
+            key=lambda card: card.quantity,
+            default=None
         )
 
-        most_owned = MostOwnedCard(
-            collection=collection,
-            card_data=card_service.get_card_smart(collection.card_id)
-        )
+        most_owned_card = None
+
+        if collection:
+
+            most_owned_card = MostOwnedCard(
+                collection=collection,
+                card_data=card_service.get_card_smart(collection.card_id)
+            )
 
         return Statistics(
             total_cards=total_cards,
             unique_cards=unique_cards,
             favorite_count=favorite_count,
             wishlist_count=wishlist_count,
-            most_owned=most_owned,
+            most_owned=most_owned_card,
             collection_value=collection_value
         )
 

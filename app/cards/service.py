@@ -70,36 +70,89 @@ class CardService:
         return response.json()["data"]
 
     def cache_card(self, card_data):
-        cache = CardCache(
-            id=card_data["id"],
-            name=card_data.get("name"),
-            data=card_data,
-            updated_at=datetime.now(UTC)
+
+        cache = CardCache.query.get(
+            card_data["id"]
         )
 
-        db.session.add(cache)
-        db.session.commit()
+        if cache:
+
+            cache.data = card_data
+
+        else:
+
+            cache = CardCache(
+                id=card_data["id"],
+                name=card_data.get("name"),
+                data=card_data
+            )
+
+            db.session.add(cache)
+
+        return cache
 
     def get_card_smart(self, card_id: str):
 
-        cached = CardCache.query.get(card_id)
+        cached = db.session.get(
+            CardCache,
+            card_id
+        )
 
-        # 1. try cache in the database
         if cached:
             return cached.data
 
-        # 2. fallback API
         card = self.get_card(card_id)
 
         if not card:
             return None
 
-        # save in cache
         self.cache_card(card)
+
+        db.session.commit()
 
         return card
 
-    def get_market_prices(self, card_data):
+    def get_cards_smart(self, card_ids: list[str]) -> dict:
+
+        if not card_ids:
+            return {}
+
+        cards = {}
+
+        # 1. Retrieve all existing cards from the cache at once
+        cached_cards = (
+            CardCache.query
+            .filter(
+                CardCache.id.in_(card_ids)
+            )
+            .all()
+        )
+
+        for cached in cached_cards:
+            cards[cached.id] = cached.data
+
+        # 2. Find out which ones were missing from the cache
+        missing_ids = [
+            card_id
+            for card_id in card_ids
+            if card_id not in cards
+        ]
+
+        # 3. Search for missing items in the API
+        for card_id in missing_ids:
+
+            card = self.get_card(card_id)
+
+            if card:
+                self.cache_card(card)
+
+                cards[card_id] = card
+
+        db.session.commit()
+
+        return cards
+
+    def get_market_prices(self, card_data: dict) -> MarketPrices:
 
         market = []
         low = []
@@ -109,12 +162,12 @@ class CardService:
         prices = card_data.get("tcgplayer", {}).get("prices", {})
 
         if not prices:
-            return {
-                "market": 0,
-                "low": 0,
-                "mid": 0,
-                "high": 0
-            }
+            return MarketPrices(
+                market=0,
+                low=0,
+                mid=0,
+                high=0
+            )
 
         for price_data in prices.values():
             if price_data.get("market") is not None:

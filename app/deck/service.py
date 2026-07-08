@@ -1,51 +1,418 @@
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import selectinload
+from .results import DeckSummary, DeckCardDetail, DeckDetail, DeckStatistics
 from .validators import DeckValidator
-from ..models import Deck
+from .card_rules import DeckCardRules
+from ..cards.service import card_service
+from ..models import Deck, DeckCard
 from ..extensions import db
+from .exceptions import (
+    DeckNotFoundError,
+    DeckCardNotFoundError
+)
 
 
 class DeckService:
 
     def __init__(self):
         self.validator = DeckValidator()
+        self.card_rules = DeckCardRules()
 
     def create(self, user, name, description):
+
+        name = name.strip()
 
         self.validator.validate_create(user, name)
 
         deck = Deck(
             user_id=user.id,
-            name=name.strip(),
+            name=name,
             description=(description or "").strip()
         )
 
         db.session.add(deck)
-        db.session.commit()
+        self._commit()
 
-        return deck
+        return self._build_deck_detail(deck)
 
-    def update(self):
-        pass
+    def update(self, user, deck_id, name, description):
 
-    def delete(self):
-        pass
+        name = name.strip()
 
-    def get_deck(self, deck_id):
-        pass
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError(
+                "Deck not found."
+            )
+
+        self.validator.validate_update(
+            user=user,
+            deck=deck,
+            name=name
+        )
+
+        deck.name = name
+        deck.description = (description or "").strip()
+
+        self._commit()
+
+        return self._build_deck_detail(deck)
+
+    def delete(self, user, deck_id):
+
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError(
+                "Deck not found."
+            )
+
+        db.session.delete(deck)
+        self._commit()
+
+        return True
+
+    def get_deck(self, user, deck_id):
+
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError(
+                "Deck not found."
+            )
+
+        return self._build_deck_detail(deck)
+
+    def _count_cards(self, deck):
+
+        return sum(
+            card.quantity
+            for card in deck.cards
+        )
+
+    def _count_unique_cards(self, deck):
+
+        return len(deck.cards)
+
+    def _get_deck(self, user, deck_id):
+
+        return (
+            Deck.query
+            .options(
+                selectinload(Deck.cards)
+            )
+            .filter_by(
+                id=deck_id,
+                user_id=user.id
+            )
+            .first()
+        )
+
+    def _get_deck_card(self, deck, card_id):
+
+        return next(
+            (
+                card
+                for card in deck.cards
+                if card.card_id == card_id
+            ),
+            None
+        )
+
+    def _build_card_detail(self, deck_card):
+
+        return DeckCardDetail(
+            card_id=deck_card.card_id,
+            quantity=deck_card.quantity,
+            card_data=card_service.get_card_smart(deck_card.card_id)
+        )
+
+    def _build_deck_detail(self, deck):
+
+        card_ids = [
+            card.card_id
+            for card in deck.cards
+        ]
+
+        cards_data = card_service.get_cards_smart(card_ids)
+
+        cards = [
+            DeckCardDetail(
+                card_id=card.card_id,
+                quantity=card.quantity,
+                card_data=cards_data.get(
+                    card.card_id
+                )
+            )
+            for card in sorted(
+                deck.cards,
+                key=lambda card: card.name
+            )
+        ]
+
+        return DeckDetail(
+            id=deck.id,
+            name=deck.name,
+            description=deck.description,
+            cards=cards,
+            total_cards=self._count_cards(deck),
+            total_unique_cards=self._count_unique_cards(deck),
+            created_at=deck.created_at,
+            updated_at=deck.updated_at
+        )
 
     def get_user_decks(self, user):
-        pass
+        decks = (
+            Deck.query
+            .options(selectinload(Deck.cards))
+            .filter_by(user_id=user.id)
+            .order_by(Deck.updated_at.desc())
+            .all()
+        )
 
-    def get_card(self, deck, card_id):
-        pass
+        return [
+            self._build_summary(deck)
+            for deck in decks
+        ]
 
-    def add_card(self, deck, card_id):
-        pass
+    def _build_summary(self, deck):
 
-    def remove_card(self, deck, card_id):
-        pass
+        return DeckSummary(
+            id=deck.id,
+            name=deck.name,
+            description=deck.description,
+            total_cards=self._count_cards(deck),
+            total_unique_cards=self._count_unique_cards(deck),
+            created_at=deck.created_at,
+            updated_at=deck.updated_at
+        )
 
-    def change_quantity(self, deck, card_id, quantity):
-        pass
+    def get_card(self, user, deck_id, card_id):
 
-    def get_statistics(self):
-        pass
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError(
+                "Deck not found."
+            )
+
+        deck_card = self._get_deck_card(deck, card_id)
+
+        if deck_card is None:
+            raise DeckCardNotFoundError(
+                "Card not found in deck."
+            )
+
+        return self._build_card_detail(deck_card)
+
+    def add_card(self, user, deck_id, card_id):
+
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError(
+                "Deck not found."
+            )
+
+        deck_card = self._get_deck_card(deck,card_id)
+
+        card = card_service.get_card_smart(
+            card_id
+        )
+
+        self.card_rules.validate_add_card(
+            deck,
+            deck_card,
+            card
+        )
+
+        if deck_card:
+
+            deck_card.quantity += 1
+
+        else:
+
+            deck.cards.append(
+                DeckCard(
+                    card_id=card_id,
+                    name=card["name"],
+                    quantity=1
+                )
+            )
+
+        self._commit()
+
+        return self._build_deck_detail(deck)
+
+    def remove_card(self, user, deck_id, card_id):
+
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError(
+                "Deck not found."
+            )
+
+        deck_card = self._get_deck_card(deck, card_id)
+
+        if deck_card is None:
+            raise DeckCardNotFoundError(
+                "Card not found in deck."
+            )
+
+        if deck_card.quantity > 1:
+
+            deck_card.quantity -= 1
+
+        else:
+
+            db.session.delete(deck_card)
+
+        self._commit()
+
+        return self._build_deck_detail(deck)
+
+    def update_quantity(self, user, deck_id, card_id, quantity):
+
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError(
+                "Deck not found."
+            )
+
+        deck_card = self._get_deck_card(deck, card_id)
+
+        if deck_card is None:
+            raise DeckCardNotFoundError(
+                "Card not found in deck."
+            )
+
+        card_data = card_service.get_card_smart(
+            deck_card.card_id
+        )
+
+        self.card_rules.validate_quantity(
+            deck,
+            deck_card,
+            card_data,
+            quantity
+        )
+
+        deck_card.quantity = quantity
+
+        self._commit()
+
+        return self._build_deck_detail(deck)
+
+    def _commit(self):
+
+        try:
+            db.session.commit()
+
+        except SQLAlchemyError:
+            db.session.rollback()
+            raise
+
+    def get_statistics(self, user, deck_id):
+
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError(
+                "Deck not found."
+            )
+
+        cards_data = card_service.get_cards_smart(
+            [
+                card.card_id
+                for card in deck.cards
+            ]
+        )
+
+        return self._build_statistics(
+            deck,
+            cards_data
+        )
+
+    def _build_statistics(
+        self,
+        deck,
+        cards_data
+    ):
+
+        pokemon = 0
+        trainers = 0
+        energies = 0
+
+        hp_total = 0
+        hp_count = 0
+
+        total_value = 0
+
+        for deck_card in deck.cards:
+
+            card_data = cards_data.get(
+                deck_card.card_id
+            )
+
+            if card_data is None:
+                continue
+
+            # Calculate statistics
+            quantity = deck_card.quantity
+
+            supertype = card_data.get("supertype")
+
+            # Pokémon
+            if supertype == "Pokémon":
+
+                pokemon += quantity
+
+                hp = card_data.get("hp")
+
+                if hp:
+
+                    try:
+
+                        hp_total += int(hp) * quantity
+                        hp_count += quantity
+
+                    except ValueError:
+                        pass
+
+            # Trainer
+            elif supertype == "Trainer":
+
+                trainers += quantity
+
+            # Energy
+            elif supertype == "Energy":
+
+                energies += quantity
+
+            # Market Value
+            total_value += (
+                card_service
+                .get_market_prices(card_data)
+                .market
+                * quantity
+            )
+
+        average_hp = (
+            hp_total // hp_count
+            if hp_count else 0
+        )
+
+        return DeckStatistics(
+            total_cards=self._count_cards(deck),
+            pokemon=pokemon,
+            trainers=trainers,
+            energies=energies,
+            average_hp=average_hp,
+            total_value=round(total_value, 2)
+        )
+
+
+deck_service = DeckService()

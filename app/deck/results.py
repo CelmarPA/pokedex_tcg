@@ -8,7 +8,7 @@ class DeckSummary:
     id: int
     name: str
     description: str
-    total_crds: int
+    total_cards: int
     total_unique_cards: int
     created_at: datetime
     updated_at: datetime
@@ -18,7 +18,6 @@ class DeckSummary:
 class DeckCardDetail:
 
     card_id: str
-    name: str
     quantity: int
     card_data: dict
 
@@ -39,6 +38,7 @@ class DeckDetail:
 @dataclass(slots=True)
 class DeckStatistics:
 
+    total_cards: int
     pokemon: int
     trainers: int
     energies: int

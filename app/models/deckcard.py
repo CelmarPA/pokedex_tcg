@@ -14,7 +14,7 @@ class DeckCard(db.Model):
 
     __tablename__ = "deck_cards"
 
-    __table_args__ = (UniqueConstraint("deck_id, card_id", name="uq_deck_card"),)
+    __table_args__ = (UniqueConstraint("deck_id", "card_id", name="uq_deck_card"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     deck_id: Mapped[int] = mapped_column(ForeignKey("decks.id"), nullable=False, index=True)

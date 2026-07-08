@@ -1,26 +1,35 @@
+from sqlalchemy import func
+from .exceptions import (
+    DeckValidationError,
+    DeckRuleError
+)
 from ..models import Deck
 
 
 class DeckValidator:
 
-    def validate_create(self, user, name):
+    def validate_create(
+        self,
+        user,
+        name
+    ):
 
-        exists = Deck.query.filter_by(
-            user_id=user.id,
-            name=name
-        ).first()
-
-        if exists:
-            raise ValueError(
+        if self._find_by_name(user, name):
+            raise DeckValidationError(
                 "You already have a deck with this name."
             )
 
+    def validate_update(self, user, deck, name):
 
-    def validate_quantity(self, deck, card_id, quantity):
-        pass
+        exists = self._find_by_name(user, name)
 
-    def validate_max_cards(self, deck):
-        pass
+        if exists and exists.id != deck.id:
+            raise DeckValidationError(
+                "You already have a deck with this name."
+            )
 
-    def validate_duplicate(self, deck, card_id):
-        pass
+    def _find_by_name(self, user, name):
+        return Deck.query.filter(
+            Deck.user_id == user.id,
+            func.lower(Deck.name) == name.lower()
+        ).first()
