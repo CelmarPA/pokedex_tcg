@@ -1,0 +1,113 @@
+<div class="card h-100 shadow-sm border-0">
+
+    <div class="card-body text-center">
+
+        <img
+            src="{{ card.card_data.images.small }}"
+            alt="{{ card.card_data.name }}"
+            class="card-img-top mb-3"
+        >
+
+        <h5 class="card-title">
+
+            {{ card.card_data.name }}
+
+        </h5>
+
+        <p>
+
+            <span class="badge bg-primary fs-6">
+
+                Qty: {{ card.quantity }}
+
+            </span>
+
+        </p>
+
+        <div class="d-flex justify-content-center gap-2 mb-3">
+
+            <form
+                action="{{ url_for('deck.add_card', deck_id=deck.id, card_id=card.card_id) }}"
+                method="POST"
+            >
+
+                <button
+                    type="submit"
+                    class="btn btn-success btn-sm"
+                >
+                    +
+                </button>
+
+            </form>
+
+            {% if card.quantity == 1 %}
+
+                <form
+                    action="{{ url_for('deck.remove_card', deck_id=deck.id, card_id=card.card_id) }}"
+                    method="POST"
+                    onsubmit="return confirm('This is the last copy of this card. Remove it from the deck?')"
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-warning btn-sm"
+                    >
+                        -
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <form
+                    action="{{ url_for('deck.remove_card', deck_id=deck.id, card_id=card.card_id) }}"
+                    method="POST"
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-warning btn-sm"
+                    >
+                        -
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+        <form
+            action="{{ url_for('deck.update_quantity', deck_id=deck.id, card_id=card.card_id) }}"
+            method="POST"
+            class="d-flex gap-2 mb-3"
+        >
+
+            <input
+                type="number"
+                name="quantity"
+                value="{{ card.quantity }}"
+                min="1"
+                max="60"
+                class="form-control form-control-sm text-center"
+            >
+
+            <button
+                type="submit"
+                class="btn btn-outline-primary btn-sm"
+            >
+                Save
+            </button>
+
+        </form>
+
+        <a
+            href="{{ url_for('cards.card_detail', card_id=card.card_id) }}"
+            class="btn btn-primary btn-sm w-100"
+        >
+            View Details
+        </a>
+
+    </div>
+
+</div>

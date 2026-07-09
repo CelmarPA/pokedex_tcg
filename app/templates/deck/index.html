@@ -4,10 +4,50 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container">
 
-    <h1>My Decks</h1>
+    <div class="d-flex justify-content-between align-item-center mb-4">
+
+        <h2>
+            My Decks
+        </h2>
+
+        <a
+            href="{{ url_for('deck.create') }}"
+            class="btn btn-primary"
+        >
+            + Create Deck
+        </a>
+
+    </div>
+
+    {% if decks %}
+
+        <div class="row g-4">
+
+            {% for deck in decks %}
+
+                <div class="col-md-6 col-lg-4">
+
+                    {% include "components/deck_summary.html" %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="alert alert-info">
+
+             You don't have any decks yet.
+
+        </div>
+
+    {% endif %}
 
 </div>
 
 {% endblock %}
+

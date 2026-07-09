@@ -1,0 +1,76 @@
+<div class="card h-100 shadow-sm border-0">
+
+    <div class="card-body">
+
+        <h5 class="card-title">
+
+            {{ deck.name }}
+
+        </h5>
+
+        <p class="text-muted small">
+
+            {{ deck.description or "No description." }}
+
+        </p>
+
+        <hr>
+
+        <div class="mb-3">
+
+            <span class="badge bg-primary">
+
+                {{ deck.total_cards }}/60 Cards
+
+            </span>
+
+            <span class="badge bg-secondary">
+
+                {{ deck.total_unique_cards }} Unique
+
+            </span>
+
+        </div>
+
+        <small class="text-muted d-block mb-3">
+
+            Updated:
+            {{ deck.updated_at.strftime("%d/%m/%Y %H:%M") }}
+
+        </small>
+
+        <div class="d-flex gap-2">
+
+            <a
+                href="{{ url_for('deck.detail', deck_id=deck.id) }}"
+                class="btn btn-primary btn-sm flex-fill"
+            >
+                View
+            </a>
+
+            <a
+                href="{{ url_for('deck.edit', deck_id=deck.id) }}"
+                class="btn btn-warning btn-sm"
+            >
+                Edit
+            </a>
+
+            <form
+                method="POST"
+                action="{{ url_for('deck.delete', deck_id=deck.id) }}"
+                onsubmit="return confirm('Delete this deck?')"
+            >
+                <button
+                    type="submit"
+                    class="btn btn-danger btn-sm"
+                >
+                    Delete
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

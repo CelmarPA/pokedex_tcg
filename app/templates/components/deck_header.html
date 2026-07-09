@@ -1,0 +1,65 @@
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-start">
+
+            <div>
+
+                <h2 class="mb-2">
+
+                    {{ deck.name }}
+
+                </h2>
+
+                <p class="text-muted mb-3">
+
+                    {{ deck.description or "No Description" }}
+
+                </p>
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <span class="badge bg-primary fs-6">
+
+                        {{ deck.total_cards }}/60 Cards
+
+                    </span>
+
+                    <span class="badge bg-secondary fs-6">
+
+                        {{ deck.total_unique_cards }} Unique
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="text-end">
+
+                <div class="btn-group">
+
+                    <a
+                        href="{{ url_for('deck.edit', deck_id=deck.id) }}"
+                        class="btn btn-warning"
+                    >
+                        Edit
+                    </a>
+
+{#                    <a#}
+{#                        href="{{ url_for('deck.statistics', deck_id=deck.id) }}"#}
+{#                        class="btn btn-info"#}
+{#                    >#}
+{#                        Statistics#}
+{#                    </a>#}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
