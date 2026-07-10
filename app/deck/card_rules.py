@@ -17,10 +17,16 @@ class DeckCardRules:
         self,
         deck,
         deck_card,
+        collection,
         card_data
     ):
 
         self.validate_max_cards(deck)
+
+        self.validate_collection_quantity(
+            deck_card,
+            collection
+        )
 
         self.validate_duplicate(
             deck_card,
@@ -31,11 +37,17 @@ class DeckCardRules:
         self,
         deck,
         deck_card,
+        collection,
         card_data,
         quantity
     ):
 
         self.validate_min_quantity(quantity)
+
+        self.validate_collection_quantity_update(
+            collection,
+            quantity
+        )
 
         self.validate_duplicate_quantity(
             card_data,
@@ -117,4 +129,32 @@ class DeckCardRules:
         if total > 60:
             raise DeckRuleError(
                 "A deck cannot contain more than 60 cards."
+            )
+
+    def validate_collection_quantity(
+            self,
+            deck_card,
+            collection
+    ):
+
+        new_quantity = (
+            deck_card.quantity + 1
+            if deck_card
+            else 1
+        )
+
+        if new_quantity > collection.quantity:
+            raise DeckRuleError(
+                "You don't have enough copies of this card in your collection."
+            )
+
+    def validate_collection_quantity_update(
+            self,
+            collection,
+            quantity
+    ):
+
+        if quantity > collection.quantity:
+            raise DeckRuleError(
+                "You don't have enough copies of this card in your collection."
             )

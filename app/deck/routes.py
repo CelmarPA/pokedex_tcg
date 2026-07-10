@@ -4,6 +4,7 @@ from . import deck
 from .exceptions import DeckValidationError, DeckNotFoundError, DeckError
 from .forms import DeckForm
 from .service import deck_service
+from ..collection.service import collection_service
 
 
 @deck.route("/")
@@ -67,7 +68,7 @@ def edit(deck_id: int):
                 description=form.description.data
             )
 
-            flash("Deck updated successfully.", "Success")
+            flash("Deck updated successfully.", "success")
 
             return redirect(url_for("deck.index"))
 
@@ -106,10 +107,13 @@ def detail(deck_id: int):
 
     deck_ = deck_service.get_deck(current_user, deck_id)
 
+    if deck_ is None:
+        abort(404)
+
     return render_template("deck/detail.html", deck=deck_)
 
 
-@deck.route("/<int:deck_id>/add/<card_id>", methods=["GET", "POST"])
+@deck.route("/<int:deck_id>/add/<card_id>", methods=["POST"])
 @login_required
 def add_card(deck_id: int, card_id: str):
 
@@ -130,7 +134,7 @@ def add_card(deck_id: int, card_id: str):
     return redirect(url_for("deck.detail", deck_id=deck_id))
 
 
-@deck.route("/<int:deck_id>/remove/<card_id>", methods=["GET", "POST"])
+@deck.route("/<int:deck_id>/remove/<card_id>", methods=["POST"])
 @login_required
 def remove_card(deck_id: int, card_id: str):
 
@@ -151,13 +155,13 @@ def remove_card(deck_id: int, card_id: str):
     return redirect(url_for("deck.detail", deck_id=deck_id))
 
 
-@deck.route("/<int:deck_id>/quantity/<card_id>", methods=["GET", "POST"])
+@deck.route("/<int:deck_id>/quantity/<card_id>", methods=["POST"])
 @login_required
 def update_quantity(deck_id: int, card_id: str):
 
-    quantity = int(request.form["quantity"])
-
     try:
+
+        quantity = int(request.form["quantity"])
 
         deck_service.update_quantity(
             user=current_user,
@@ -177,3 +181,35 @@ def update_quantity(deck_id: int, card_id: str):
         flash(str(e), "warning")
 
     return redirect(url_for("deck.detail", deck_id=deck_id))
+
+
+@deck.route("/<int:deck_id>/statistics")
+@login_required
+def statistics(deck_id: int):
+
+    deck_statistics = deck_service.get_statistics(current_user, deck_id)
+
+    return render_template("deck/statistics.html", statistics=deck_statistics)
+
+
+@deck.route("/<int:deck_id>/add-card")
+@login_required
+def add_card_page(deck_id):
+
+    deck_ = deck_service.get_deck(
+        current_user,
+        deck_id
+    )
+
+    if deck_ is None:
+        raise DeckNotFoundError()
+
+    cards = collection_service.get_user_cards_with_data(
+        current_user
+    )
+
+    return render_template(
+        "deck/add_card.html",
+        deck=deck_,
+        cards=cards
+    )

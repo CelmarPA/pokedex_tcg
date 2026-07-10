@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %} - Add Card{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+
+            Add Card to {{ deck.name }}
+
+        </h2>
+
+        <a
+            href="{{ url_for('deck.detail', deck_id=deck.id) }}"
+            class="btn btn-secondary"
+        >
+
+            Back
+
+        </a>
+
+    </div>
+
+    <div class="row">
+
+        {% for item in cards %}
+
+            <div class="col-md-3 mb-4">
+
+                <div class="card">
+
+                    <img
+                        src="{{ item.card.images.small }}"
+                        class="card-img-top"
+                    >
+
+                    <div class="card-body">
+
+                        <h5>
+                            {{ item.card.name }}
+                        </h5>
+
+                        <p>
+                            Quantity: {{ item.quantity }}
+                        </p>
+
+
+                        <form method="POST"
+                              action="{{ url_for(
+                                'deck.add_card',
+                                deck_id=deck.id,
+                                card_id=item.card.id
+                              ) }}">
+
+                            <button class="btn btn-primary">
+                                Add
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

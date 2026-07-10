@@ -145,5 +145,46 @@ class CollectionService:
 
         return len(user.collections)
 
+    def _get_collection_card(self, user, card_id):
+
+        return Collection.query.filter_by(
+            user_id=user.id,
+            card_id=card_id
+        ).first()
+
+    def get_card(self, user, card_id):
+
+        collection = self._get_collection_card(
+            user,
+            card_id
+        )
+
+        if collection is None:
+            return None
+
+        return collection
+
+    def get_user_cards_with_data(self, user):
+
+        cards = []
+
+        for item in user.collections:
+
+            card_data = card_service.get_card_smart(
+                item.card_id
+            )
+
+            if not card_data:
+                continue
+
+            cards.append(
+                CollectionCard(
+                    card=card_data,
+                    quantity=item.quantity
+                )
+            )
+
+        return cards
+
 
 collection_service = CollectionService()

@@ -1,0 +1,180 @@
+<div class="card shadow-sm border-0">
+
+    <div class="card-header">
+
+        <h4 class="mb-0">
+
+            Deck Statistics
+
+        </h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <ul class="list-group list-group-flush">
+
+            <li class="list-group-item d-flex justify-content-between">
+
+                <strong>Total Cards</strong>
+
+                <span class="badge bg-primary">
+
+                    {{ statistics.total_cards }}
+
+                </span>
+
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+
+                <strong>Unique Cards</strong>
+
+                <span class="badge bg-secondary">
+
+                    {{ statistics.total_unique_cards }}
+
+                </span>
+
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+
+                <strong>Pokémon</strong>
+
+                <span>
+
+                    {{ statistics.pokemon }}
+
+                </span>
+
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+
+                <strong>Trainer</strong>
+
+                <span>
+
+                    {{ statistics.trainers }}
+
+                </span>
+
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+
+                <strong>Energy</strong>
+
+                <span>
+
+                    {{ statistics.energies }}
+
+                </span>
+
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+
+                <strong>Average Hp</strong>
+
+                <span>
+
+                    {{ statistics.average_hp }}
+
+                </span>
+
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+
+                <strong>Average Card Price</strong>
+
+                <span>
+
+                    ${{ "%.2f"|format(statistics.average_price) }}
+
+                </span>
+
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+
+                <strong>Total Deck Value</strong>
+
+                <span>
+
+                    ${{ "%.2f"|format(statistics.total_value) }}
+
+                </span>
+
+            </li>
+
+        </ul>
+
+        <hr>
+
+        <h5 class="mb-3">
+
+            Deck Composition
+
+        </h5>
+
+        <p class="mb-1">
+
+            Pokémon ({{ statistics.pokemon }})
+
+        </p>
+
+        <div class="progress mb-3">
+
+            <div
+                class="progress-bar bg-danger"
+                role="progressbar"
+                style="width: {{ statistics.pokemon_percentage }}%"
+            >
+                {{ statistics.pokemon }}
+            </div>
+
+        </div>
+
+        <p class="mb-1">
+
+            Trainer ({{ statistics.trainers }})
+
+        </p>
+
+        <div class="progress mb-3">
+
+            <div
+                class="progress-bar bg-warning text-dark"
+                role="progressbar"
+                style="width: {{ statistics.trainers_percentage }}%"
+            >
+                {{ statistics.trainers }}
+            </div>
+
+        </div>
+
+        <p class="mb-1">
+
+            Energy ({{ statistics.energies }})
+
+        </p>
+
+        <div class="progress">
+
+            <div
+                class="progress-bar bg-success"
+                role="progressbar"
+                style="width: {{ statistics.energies_percentage }}%"
+            >
+                {{ statistics.energies }}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+

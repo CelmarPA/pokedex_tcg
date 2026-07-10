@@ -39,8 +39,13 @@ class DeckDetail:
 class DeckStatistics:
 
     total_cards: int
+    total_unique_cards: int
     pokemon: int
     trainers: int
     energies: int
     average_hp: int
+    average_price: float
     total_value: float
+    pokemon_percentage: float
+    trainers_percentage: float
+    energies_percentage: float

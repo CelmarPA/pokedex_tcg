@@ -8,6 +8,19 @@
 
     {% include "components/deck_header.html" %}
 
+    <div class="d-flex justify-content-end mb-4">
+
+        <a
+            href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
+            class="btn btn-success"
+        >
+
+            + Add Card
+
+        </a>
+
+    </div>
+
     <div class="row g-4">
 
         {% for card in deck.cards %}
@@ -22,9 +35,22 @@
 
             <div class="col-12">
 
-                <div class="aler alert-info">
+                <div class="alert alert-info text-center">
 
-                    This deck doesn't contain any card yet.
+                    <p class="mb-3">
+
+                        This deck doesn't contain any cards yet.
+
+                    </p>
+
+                    <a
+                        href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
+                        class="btn btn-success"
+                    >
+
+                        Add Your First Card
+
+                    </a>
 
                 </div>
 

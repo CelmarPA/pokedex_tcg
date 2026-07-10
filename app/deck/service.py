@@ -4,11 +4,13 @@ from .results import DeckSummary, DeckCardDetail, DeckDetail, DeckStatistics
 from .validators import DeckValidator
 from .card_rules import DeckCardRules
 from ..cards.service import card_service
+from ..collection.service import collection_service
 from ..models import Deck, DeckCard
 from ..extensions import db
 from .exceptions import (
     DeckNotFoundError,
-    DeckCardNotFoundError
+    DeckCardNotFoundError,
+    DeckRuleError
 )
 
 
@@ -42,9 +44,7 @@ class DeckService:
         deck = self._get_deck(user, deck_id)
 
         if deck is None:
-            raise DeckNotFoundError(
-                "Deck not found."
-            )
+            raise DeckNotFoundError()
 
         self.validator.validate_update(
             user=user,
@@ -64,9 +64,7 @@ class DeckService:
         deck = self._get_deck(user, deck_id)
 
         if deck is None:
-            raise DeckNotFoundError(
-                "Deck not found."
-            )
+            raise DeckNotFoundError()
 
         db.session.delete(deck)
         self._commit()
@@ -78,9 +76,7 @@ class DeckService:
         deck = self._get_deck(user, deck_id)
 
         if deck is None:
-            raise DeckNotFoundError(
-                "Deck not found."
-            )
+            raise DeckNotFoundError()
 
         return self._build_deck_detail(deck)
 
@@ -171,6 +167,8 @@ class DeckService:
             .all()
         )
 
+        print([deck.id for deck in decks])
+
         return [
             self._build_summary(deck)
             for deck in decks
@@ -193,16 +191,12 @@ class DeckService:
         deck = self._get_deck(user, deck_id)
 
         if deck is None:
-            raise DeckNotFoundError(
-                "Deck not found."
-            )
+            raise DeckNotFoundError()
 
         deck_card = self._get_deck_card(deck, card_id)
 
         if deck_card is None:
-            raise DeckCardNotFoundError(
-                "Card not found in deck."
-            )
+            raise DeckCardNotFoundError()
 
         return self._build_card_detail(deck_card)
 
@@ -211,20 +205,32 @@ class DeckService:
         deck = self._get_deck(user, deck_id)
 
         if deck is None:
-            raise DeckNotFoundError(
-                "Deck not found."
+            raise DeckNotFoundError()
+
+        collection = collection_service.get_card(
+            user,
+            card_id
+        )
+
+        if collection is None:
+            raise DeckRuleError(
+                "You can only add cards that are in your collection."
             )
 
-        deck_card = self._get_deck_card(deck,card_id)
+        deck_card = self._get_deck_card(
+            deck,
+            card_id
+        )
 
-        card = card_service.get_card_smart(
+        card_data = card_service.get_card_smart(
             card_id
         )
 
         self.card_rules.validate_add_card(
-            deck,
-            deck_card,
-            card
+            deck=deck,
+            deck_card=deck_card,
+            collection=collection,
+            card_data=card_data
         )
 
         if deck_card:
@@ -236,7 +242,7 @@ class DeckService:
             deck.cards.append(
                 DeckCard(
                     card_id=card_id,
-                    name=card["name"],
+                    name=collection.id,
                     quantity=1
                 )
             )
@@ -250,16 +256,12 @@ class DeckService:
         deck = self._get_deck(user, deck_id)
 
         if deck is None:
-            raise DeckNotFoundError(
-                "Deck not found."
-            )
+            raise DeckNotFoundError()
 
         deck_card = self._get_deck_card(deck, card_id)
 
         if deck_card is None:
-            raise DeckCardNotFoundError(
-                "Card not found in deck."
-            )
+            raise DeckCardNotFoundError()
 
         if deck_card.quantity > 1:
 
@@ -278,15 +280,21 @@ class DeckService:
         deck = self._get_deck(user, deck_id)
 
         if deck is None:
-            raise DeckNotFoundError(
-                "Deck not found."
-            )
+            raise DeckNotFoundError()
 
         deck_card = self._get_deck_card(deck, card_id)
 
         if deck_card is None:
-            raise DeckCardNotFoundError(
-                "Card not found in deck."
+            raise DeckCardNotFoundError()
+
+        collection = collection_service.get_card(
+            user,
+            card_id
+        )
+
+        if collection is None:
+            raise DeckRuleError(
+                "You can only use cards that are in your collection."
             )
 
         card_data = card_service.get_card_smart(
@@ -294,10 +302,11 @@ class DeckService:
         )
 
         self.card_rules.validate_quantity(
-            deck,
-            deck_card,
-            card_data,
-            quantity
+            deck=deck,
+            deck_card=deck_card,
+            collection=collection,
+            card_data=card_data,
+            quantity=quantity
         )
 
         deck_card.quantity = quantity
@@ -320,9 +329,7 @@ class DeckService:
         deck = self._get_deck(user, deck_id)
 
         if deck is None:
-            raise DeckNotFoundError(
-                "Deck not found."
-            )
+            raise DeckNotFoundError()
 
         cards_data = card_service.get_cards_smart(
             [
@@ -341,6 +348,9 @@ class DeckService:
         deck,
         cards_data
     ):
+
+        total_cards = self._count_cards(deck)
+        total_unique_cards = self._count_unique_cards(deck)
 
         pokemon = 0
         trainers = 0
@@ -405,13 +415,28 @@ class DeckService:
             if hp_count else 0
         )
 
+        average_price = (
+            round(total_value / total_cards, 2)
+            if total_cards
+            else 0
+        )
+
+        pokemon_percentage = (pokemon / total_cards * 100) if total_cards else 0
+        trainers_percentage = (trainers / total_cards * 100) if total_cards else 0
+        energies_percentage = (energies / total_cards * 100) if total_cards else 0
+
         return DeckStatistics(
-            total_cards=self._count_cards(deck),
+            total_cards=total_cards,
+            total_unique_cards=total_unique_cards,
             pokemon=pokemon,
             trainers=trainers,
             energies=energies,
             average_hp=average_hp,
-            total_value=round(total_value, 2)
+            average_price= average_price,
+            total_value=round(total_value, 2),
+            pokemon_percentage=pokemon_percentage,
+            trainers_percentage=trainers_percentage,
+            energies_percentage=energies_percentage
         )
 
 
