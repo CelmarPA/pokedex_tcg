@@ -1,0 +1,56 @@
+<div class="card h-100 shadow-sm border-0">
+
+    <div class="card-body text-center">
+
+        <img
+            src="{{ card.card.images.small }}"
+            alt="{{ card.card.name }}"
+            class="card-img-top mb-3"
+        >
+
+        <h5 class="card-title">
+
+            {{ card.card.name }}
+
+        </h5>
+
+        <div class="mb-3">
+
+            <span class="badge bg-primary d-block mb-2">
+
+                Owned: {{ card.collection_quantity }}
+
+            </span>
+
+            <span class="badge bg-success d-block mb-2">
+
+                In Deck: {{ card.deck_quantity }}
+
+            </span>
+
+            <span class="badge bg-secondary d-block mb-2">
+
+                Max Allowed: {{ card.max_quantity }}
+
+            </span>
+
+        </div>
+
+        <form
+            action="{{ url_for('deck.add_card', deck_id=deck.id, card_id=card.card.id) }}"
+            method="POST"
+        >
+
+            <button
+                class="btn btn-success w-100"
+            >
+
+                Add to Deck
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>

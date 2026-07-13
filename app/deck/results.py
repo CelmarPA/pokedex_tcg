@@ -49,3 +49,12 @@ class DeckStatistics:
     pokemon_percentage: float
     trainers_percentage: float
     energies_percentage: float
+
+
+@dataclass(slots=True)
+class AvailableDeckCard:
+
+    card: dict
+    collection_quantity: int
+    deck_quantity: int
+    max_quantity: int

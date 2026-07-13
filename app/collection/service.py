@@ -166,25 +166,30 @@ class CollectionService:
 
     def get_user_cards_with_data(self, user):
 
-        cards = []
+        card_ids = [
+            item.card_id
+            for item in user.collections
+        ]
 
-        for item in user.collections:
+        cards_data = card_service.get_cards_smart(
+            card_ids
+        )
 
-            card_data = card_service.get_card_smart(
-                item.card_id
+        return [
+            self._build_collection_card(
+                item,
+                cards_data[item.card_id]
             )
+            for item in user.collections
+            if item.card_id in cards_data
+        ]
 
-            if not card_data:
-                continue
+    def _build_collection_card(self, collection, card_data):
 
-            cards.append(
-                CollectionCard(
-                    card=card_data,
-                    quantity=item.quantity
-                )
-            )
-
-        return cards
+        return CollectionCard(
+            card=card_data,
+            quantity=collection.quantity
+        )
 
 
 collection_service = CollectionService()

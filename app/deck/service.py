@@ -1,6 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
-from .results import DeckSummary, DeckCardDetail, DeckDetail, DeckStatistics
+from .results import DeckSummary, DeckCardDetail, DeckDetail, DeckStatistics, AvailableDeckCard
 from .validators import DeckValidator
 from .card_rules import DeckCardRules
 from ..cards.service import card_service
@@ -12,6 +12,7 @@ from .exceptions import (
     DeckCardNotFoundError,
     DeckRuleError
 )
+from ..search.service import search_service
 
 
 class DeckService:
@@ -438,6 +439,64 @@ class DeckService:
             trainers_percentage=trainers_percentage,
             energies_percentage=energies_percentage
         )
+
+    def get_available_cards(self, user, deck_id, filters):
+
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError()
+
+        collection = collection_service.get_user_cards_with_data(user)
+
+        deck_cards = {
+            card.card_id: card
+            for card in deck.cards
+        }
+
+        available = []
+
+        for item in collection:
+
+            if not search_service.match_filters(filters, item.card):
+                continue
+
+            deck_card = deck_cards.get(
+                item.card["id"]
+            )
+
+            deck_quantity = (
+                deck_card.quantity
+                if deck_card
+                else 0
+            )
+
+            if self.card_rules.is_basic_energy(item.card):
+
+                max_quantity = item.quantity
+
+            else:
+
+                max_quantity = min(
+                    4,
+                    item.quantity
+                )
+
+            if deck_quantity >= max_quantity:
+                continue
+
+            available.append(
+
+                AvailableDeckCard(
+                    card=item.card,
+                    collection_quantity=item.quantity,
+                    deck_quantity=deck_quantity,
+                    max_quantity=max_quantity
+                )
+
+            )
+
+        return available
 
 
 deck_service = DeckService()

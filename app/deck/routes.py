@@ -4,7 +4,8 @@ from . import deck
 from .exceptions import DeckValidationError, DeckNotFoundError, DeckError
 from .forms import DeckForm
 from .service import deck_service
-from ..collection.service import collection_service
+from ..search.filters import SearchFilters
+from ..search.service import search_service
 
 
 @deck.route("/")
@@ -196,6 +197,10 @@ def statistics(deck_id: int):
 @login_required
 def add_card_page(deck_id):
 
+    filters = SearchFilters(
+        request.args
+    )
+
     deck_ = deck_service.get_deck(
         current_user,
         deck_id
@@ -204,12 +209,16 @@ def add_card_page(deck_id):
     if deck_ is None:
         raise DeckNotFoundError()
 
-    cards = collection_service.get_user_cards_with_data(
-        current_user
+    cards = deck_service.get_available_cards(
+        current_user,
+        deck_id,
+        filters=filters
     )
 
     return render_template(
         "deck/add_card.html",
         deck=deck_,
-        cards=cards
+        cards=cards,
+        filters=filters,
+        **search_service.get_search_context()
     )

@@ -8,67 +8,59 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
+        <div>
 
-            Add Card to {{ deck.name }}
+            <h2 class="mb-1">
 
-        </h2>
+                Add Cards
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                {{ deck.name }}
+
+            </p>
+
+            {% include "components/search_form.html" %}
+
+        </div>
+
 
         <a
             href="{{ url_for('deck.detail', deck_id=deck.id) }}"
             class="btn btn-secondary"
         >
 
-            Back
+             ← Back to Deck
 
         </a>
 
     </div>
 
-    <div class="row">
+    <div class="row g-4">
 
-        {% for item in cards %}
+        {% for card in cards %}
 
-            <div class="col-md-3 mb-4">
+            <div class="col-md-4 col-lg-3">
 
-                <div class="card">
+                {% include "components/deck_add_card.html" %}
 
-                    <img
-                        src="{{ item.card.images.small }}"
-                        class="card-img-top"
-                    >
+            </div>
 
-                    <div class="card-body">
+        {% else %}
 
-                        <h5>
-                            {{ item.card.name }}
-                        </h5>
+            <div class="col-12">
 
-                        <p>
-                            Quantity: {{ item.quantity }}
-                        </p>
+                <div class="alert alert-info text-center">
 
-
-                        <form method="POST"
-                              action="{{ url_for(
-                                'deck.add_card',
-                                deck_id=deck.id,
-                                card_id=item.card.id
-                              ) }}">
-
-                            <button class="btn btn-primary">
-                                Add
-                            </button>
-
-                        </form>
-
-                    </div>
+                    Your collection is empty.
 
                 </div>
 
             </div>
 
-            {% endfor %}
+        {% endfor %}
 
     </div>
 

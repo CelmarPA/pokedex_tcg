@@ -60,5 +60,21 @@ class SearchService:
 
         return search.casefold() in text.casefold()
 
+    def match_filters(self, filters, card):
+
+        if not self.match_search(filters.search, card["name"]):
+            return False
+
+        if filters.type and filters.type not in card.get("types", []):
+            return False
+
+        if filters.rarity and card.get("rarity") != filters.rarity:
+            return False
+
+        if filters.supertype and card.get("supertype") != filters.supertype:
+            return False
+
+        return True
+
 
 search_service = SearchService()
