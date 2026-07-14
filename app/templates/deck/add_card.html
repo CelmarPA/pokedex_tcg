@@ -22,25 +22,15 @@
 
             </p>
 
-            {% include "components/search_form.html" %}
-
         </div>
-
-
-        <a
-            href="{{ url_for('deck.detail', deck_id=deck.id) }}"
-            class="btn btn-secondary"
-        >
-
-             ← Back to Deck
-
-        </a>
 
     </div>
 
+    {% include "components/search_form.html" %}
+
     <div class="row g-4">
 
-        {% for card in cards %}
+        {% for card in cards.items %}
 
             <div class="col-md-4 col-lg-3">
 
@@ -65,5 +55,15 @@
     </div>
 
 </div>
+
+<div class="mt-4 d-flex gap-2 align-items-center">
+
+    <a href="{{ url_for('cards.index') }}" class="btn btn-secondary">
+        ← Back to Cards
+    </a>
+
+</div>
+
+{% include "components/pagination.html" %}
 
 {% endblock %}

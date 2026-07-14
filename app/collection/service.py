@@ -116,8 +116,6 @@ class CollectionService:
 
     def get_collection(self, user,filters):
 
-        search = filters.search
-
         cards_collection = []
 
         for item in user.collections:
@@ -127,15 +125,17 @@ class CollectionService:
             if not card_data:
                 continue
 
-            if not search_service.match_search(search, card_data.get("name", "")):
+            if not search_service.match_filters(filters, card_data):
                 continue
 
-            cards_collection.append(CollectionCard(
-                card=card_data,
-                quantity=item.quantity
-            ))
+            cards_collection.append(
+                CollectionCard(
+                    card=card_data,
+                    quantity=item.quantity
+                    )
+            )
 
-        return cards_collection
+        return search_service.paginate(cards_collection, filters)
 
     def get_total_cards(self, user):
 

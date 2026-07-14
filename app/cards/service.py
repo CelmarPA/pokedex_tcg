@@ -1,11 +1,10 @@
 import requests
 import os
-from datetime import datetime, UTC
 from app.models import CardCache
 from .results import CardDetail, MarketPrices
 from ..extensions import db
 from ..search.pagination import Pagination
-from ..search.results import CardSearchResult
+from ..search.results import PaginationResult
 from ..search.service import search_service
 from ..models import Collection, Favorite, Wishlist
 
@@ -53,8 +52,8 @@ class CardService:
         for card in cards:
             card["prices"] = self.get_market_prices(card)
 
-        return CardSearchResult(
-            cards=cards,
+        return PaginationResult(
+            items=cards,
             pagination=pagination
         )
 
@@ -91,7 +90,7 @@ class CardService:
 
         return cache
 
-    def get_card_smart(self, card_id: str):
+    def get_card_smart(self, card_id: str) -> dict:
 
         cached = db.session.get(
             CardCache,
@@ -154,20 +153,30 @@ class CardService:
 
     def get_market_prices(self, card_data: dict) -> MarketPrices:
 
+        tcgplayer = card_data.get("tcgplayer")
+
+        if tcgplayer:
+            return self._get_tcgplayer_prices(card_data)
+
+        cardmarket = card_data.get("cardmarket")
+
+        if cardmarket:
+            return self._get_cardmarket_prices(card_data)
+
+        return MarketPrices()
+
+    def _get_tcgplayer_prices(self, card_data: dict) -> MarketPrices:
+
         market = []
         low = []
         mid = []
         high = []
+        market_url = self.get_market_url(card_data)
 
         prices = card_data.get("tcgplayer", {}).get("prices", {})
 
         if not prices:
-            return MarketPrices(
-                market=0,
-                low=0,
-                mid=0,
-                high=0
-            )
+            return MarketPrices()
 
         for price_data in prices.values():
             if price_data.get("market") is not None:
@@ -183,11 +192,46 @@ class CardService:
                 high.append(price_data["high"])
 
         return MarketPrices(
+            market_name="TCGPlayer",
+            market_url=market_url,
             market=max(market) if market else 0,
             low=min(low) if low else 0,
             mid=max(mid) if mid else 0,
-            high=max(high) if high else 0
+            high=max(high) if high else 0,
+            market_label="Market",
+            mid_label="Mid",
+            high_label="High"
         )
+
+    def _get_cardmarket_prices(self, card_data: dict) -> MarketPrices:
+
+        prices = card_data.get("cardmarket", {}).get("prices", {})
+
+        return MarketPrices(
+            market_name="Cardmarket",
+            market_url=self.get_market_url(card_data),
+            market=prices.get("averageSellPrice", 0),
+            low=prices.get("lowPrice", 0),
+            mid=prices.get("trendPrice", 0),
+            high=prices.get("avg30", 0),
+            market_label="Average Sell",
+            mid_label="Trend",
+            high_label="30 Day Avg"
+        )
+
+    def get_market_url(self, card_data) -> str:
+
+        tcgplayer = card_data.get("tcgplayer")
+
+        if tcgplayer:
+            return tcgplayer.get("url")
+
+        cardmarket = card_data.get("cardmarket")
+
+        if cardmarket:
+            return cardmarket.get("url")
+
+        return ""
 
     def get_card_detail(self, user, card_id):
 

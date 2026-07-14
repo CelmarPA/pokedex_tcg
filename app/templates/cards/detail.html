@@ -215,12 +215,11 @@
 
 {% endif %}
 
-<a href="{{ details.card_data.tcgplayer.url }}" style="text-decoration: none; color: inherit;" target="_blank">
-    <h4 class="mt-4">TCGPlayer</h4>
+<a href="{{ details.prices.market_url }}" style="text-decoration: none; color: inherit;" target="_blank">
+    <h4 class="mt-4">{{ details.prices.market_name }}</h4>
 </a>
 
-
-<a href="{{ details.card_data.tcgplayer.url }}" class="text-decoration-none" target="_blank">
+<a href="{{ details.prices.market_url }}" class="text-decoration-none" target="_blank">
 
      <div class="row">
 
@@ -235,7 +234,7 @@
                      </h5>
 
                      <p>
-                         <strong>Market: </strong>
+                         <strong>{{ details.prices.market_label }}: </strong>
                          US$ {{ "%.2f"|format(details.prices.market) }}
                      </p>
 
@@ -245,12 +244,12 @@
                      </p>
 
                      <p>
-                         <strong>Mid: </strong>
+                         <strong>{{ details.prices.mid_label }}: </strong>
                          US$ {{ "%.2f"|format(details.prices.mid) }}
                      </p>
 
                      <p>
-                         <strong>Higher: </strong>
+                         <strong>{{ details.prices.high_label }}: </strong>
                          US$ {{ "%.2f"|format(details.prices.high) }}
                      </p>
 

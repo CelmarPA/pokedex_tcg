@@ -11,7 +11,7 @@
 {% if cards %}
     <div class="row">
 
-        {% for item in cards %}
+        {% for item in cards.items %}
 
             <div class="col-md-3 mb-4">
 
@@ -102,5 +102,7 @@
     </a>
 
 </div>
+
+{% include "components/pagination.html" %}
 
 {% endblock %}

@@ -219,6 +219,7 @@ def add_card_page(deck_id):
         "deck/add_card.html",
         deck=deck_,
         cards=cards,
+        pagination=cards.pagination,
         filters=filters,
         **search_service.get_search_context()
     )

@@ -37,3 +37,13 @@ class Pagination:
             pages.append(self.total_pages)
 
         return pages
+
+    @property
+    def offset(self):
+
+        return (self.current_page - 1) * self.page_size
+
+    @property
+    def limit(self):
+
+        return self.page_size

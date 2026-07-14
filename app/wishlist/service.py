@@ -46,8 +46,6 @@ class WishlistService:
 
     def get_wishlist(self, user, filters):
 
-        search = filters.search
-
         cards_wishlist = []
 
         for item in user.wishlists:
@@ -57,17 +55,18 @@ class WishlistService:
             if not card_data:
                 continue
 
-            if not search_service.match_search(search, card_data.get("name", "")):
+            if not search_service.match_filters(filters, card_data):
                 continue
 
             cards_wishlist.append(WishlistCard(
                 card=card_data
             ))
 
-        return cards_wishlist
+        return search_service.paginate(cards_wishlist, filters)
 
     def get_wishlist_count(self, user):
 
         return len(user.wishlists)
+
 
 wishlist_service = WishlistService()

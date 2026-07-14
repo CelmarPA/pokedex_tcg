@@ -47,8 +47,6 @@ class FavoriteService:
 
     def get_favorites(self, user, filters):
 
-        search = filters.search
-
         favorites = []
 
         for item in user.favorites:
@@ -58,14 +56,14 @@ class FavoriteService:
             if not card_data:
                 continue
 
-            if not search_service.match_search(search, card_data.get("name", "")):
+            if not search_service.match_filters(filters, card_data):
                 continue
 
             favorites.append(FavoriteCard(
                 card=card_data
             ))
 
-        return favorites
+        return search_service.paginate(favorites, filters)
 
     def get_favorite_count(self, user):
 

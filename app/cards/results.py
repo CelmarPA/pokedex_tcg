@@ -6,7 +6,7 @@ from ..models import Collection, Favorite, Wishlist
 class CardDetail:
 
     card_data: dict | None
-    prices: dict | None
+    prices: MarketPrices | None
     collection_card: Collection | None
     favorite_card: Favorite | None
     cards_wishlist: Wishlist | None
@@ -15,7 +15,12 @@ class CardDetail:
 @dataclass(slots=True)
 class MarketPrices:
 
-    market: float
-    low: float
-    mid: float
-    high: float
+    market_name: str = ""
+    market_url: str = ""
+    market: float = 0
+    low: float = 0
+    mid: float = 0
+    high: float = 0
+    market_label: str = "Market"
+    mid_label: str = "Mid"
+    high_label: str = "High"

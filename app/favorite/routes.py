@@ -41,6 +41,7 @@ def favorite_cards():
     return render_template(
         "favorite/index.html",
         favorites=favorites,
+        pagination=favorites.pagination,
         filters=filters,
         **context
     )

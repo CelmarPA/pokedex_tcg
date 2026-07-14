@@ -496,7 +496,7 @@ class DeckService:
 
             )
 
-        return available
+        return search_service.paginate(available, filters)
 
 
 deck_service = DeckService()

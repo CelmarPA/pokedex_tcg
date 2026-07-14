@@ -11,7 +11,7 @@
 {% if cards_wishlist %}
     <div class="row">
 
-        {% for item in cards_wishlist %}
+        {% for item in cards_wishlist.items %}
 
             <div class="col-md-3 mb-4">
 
@@ -74,5 +74,7 @@
     </a>
 
 </div>
+
+{% include "components/pagination.html" %}
 
 {% endblock %}

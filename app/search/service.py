@@ -3,6 +3,8 @@ from .constants import (
     CARD_SUPERTYPES,
     CARD_RARITIES
 )
+from .pagination import Pagination
+from .results import PaginationResult
 
 
 class SearchService:
@@ -75,6 +77,25 @@ class SearchService:
             return False
 
         return True
+
+    def paginate(self, items, filters):
+
+        total_items = len(items)
+
+        pagination = Pagination(
+            page=filters.page,
+            page_size=filters.page_size,
+            count=len(items),
+            total_count=total_items
+        )
+
+        start = pagination.offset
+        end = start + pagination.limit
+
+        return PaginationResult(
+            items=items[start:end],
+            pagination=pagination
+        )
 
 
 search_service = SearchService()

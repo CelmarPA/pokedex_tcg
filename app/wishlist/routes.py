@@ -43,6 +43,7 @@ def my_wishlist():
     return render_template(
         "wishlist/index.html",
         cards_wishlist=cards_wishlist,
+        pagination=cards_wishlist.pagination,
         filters=filters,
         **context
     )

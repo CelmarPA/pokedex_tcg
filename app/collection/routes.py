@@ -6,6 +6,7 @@ from .. import db
 from ..models import Collection
 from . import collection
 from ..activity.service import activity_service
+from ..search import pagination
 from ..search.filters import SearchFilters
 from ..search.service import search_service
 
@@ -59,6 +60,7 @@ def my_collection():
     return render_template(
         "collection/index.html",
         cards=cards,
+        pagination=cards.pagination,
         filters=filters,
         **context
     )
