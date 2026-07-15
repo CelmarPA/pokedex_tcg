@@ -16,8 +16,6 @@ def index():
 
     decks = deck_service.get_user_decks(current_user, filters)
 
-    print(decks.items)
-
     return render_template(
         "deck/index.html",
         decks=decks.items,
@@ -88,8 +86,8 @@ def edit(deck_id: int):
 
     elif not form.is_submitted():
 
-        form.name.data = deck_.name
-        form.description.data = deck_.description
+        form.name.data = deck_.deck.name
+        form.description.data = deck_.deck.description
 
     return render_template("deck/edit.html", form=form, deck=deck_)
 
@@ -115,12 +113,16 @@ def delete(deck_id: int):
 @login_required
 def detail(deck_id: int):
 
-    deck_ = deck_service.get_deck(current_user, deck_id)
+    page = deck_service.get_deck(current_user, deck_id)
 
-    if deck_ is None:
+    if page is None:
         abort(404)
 
-    return render_template("deck/detail.html", deck=deck_)
+    return render_template(
+        "deck/detail.html",
+        deck=page.deck,
+        statistics=page.statistics
+    )
 
 
 @deck.route("/<int:deck_id>/add/<card_id>", methods=["POST"])
@@ -210,25 +212,16 @@ def add_card_page(deck_id):
         request.args
     )
 
-    deck_ = deck_service.get_deck(
-        current_user,
-        deck_id
-    )
+    context = search_service.get_search_context()
 
-    if deck_ is None:
-        raise DeckNotFoundError()
+    page = deck_service.get_add_cards_page(current_user, deck_id, filters)
 
-    cards = deck_service.get_available_cards(
-        current_user,
-        deck_id,
-        filters=filters
-    )
+    pagination = page.cards.pagination
 
     return render_template(
         "deck/add_card.html",
-        deck=deck_,
-        cards=cards,
-        pagination=cards.pagination,
+        page=page,
         filters=filters,
-        **search_service.get_search_context()
+        pagination=pagination,
+        **context
     )

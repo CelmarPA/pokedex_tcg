@@ -2,7 +2,7 @@
 
     <div class="card-body">
 
-        <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex justify-content-between align-items-start mb-3">
 
             <div>
 
@@ -14,25 +14,9 @@
 
                 <p class="text-muted mb-3">
 
-                    {{ deck.description or "No Description" }}
+                    {{ deck.description or "No description." }}
 
                 </p>
-
-                <div class="d-flex gap-2 flex-wrap">
-
-                    <span class="badge bg-primary fs-6">
-
-                        {{ deck.total_cards }}/60 Cards
-
-                    </span>
-
-                    <span class="badge bg-secondary fs-6">
-
-                        {{ deck.total_unique_cards }} Unique
-
-                    </span>
-
-                </div>
 
             </div>
 
@@ -48,6 +32,13 @@
                     </a>
 
                     <a
+                        href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
+                        class="btn btn-success"
+                    >
+                        Add Cards
+                    </a>
+
+                    <a
                         href="{{ url_for('deck.statistics', deck_id=deck.id) }}"
                         class="btn btn-info"
                     >
@@ -55,6 +46,120 @@
                     </a>
 
                 </div>
+
+            </div>
+
+        </div>
+
+        <div class="progress mb-3" style="height: 24px;">
+
+            <div
+                class="progress-bar"
+                role="progressbar"
+                style="width: {{ (statistics.total_cards / 60 * 100)|round(1) }}%;"
+            >
+
+                {{ statistics.total_cards }}/60
+
+            </div>
+
+        </div>
+
+        <div class="row text-center">
+
+            <div class="col">
+
+                <h5>
+
+                    {{ statistics.total_cards }}
+
+                </h5>
+
+                <small class="text-muted">
+
+                    Cards
+
+                </small>
+
+            </div>
+
+            <div class="col">
+
+                <h5>
+
+                    {{ statistics.total_unique_cards }}
+
+                </h5>
+
+                <small class="text-muted">
+
+                    Unique
+
+                </small>
+
+            </div>
+
+            <div class="col">
+
+                <h5>
+
+                    {{ statistics.pokemon }}
+
+                </h5>
+
+                <small class="text-muted">
+
+                    Pokémon
+
+                </small>
+
+            </div>
+
+            <div class="col">
+
+                <h5>
+
+                    {{ statistics.trainers }}
+
+                </h5>
+
+                <small class="text-muted">
+
+                    Trainers
+
+                </small>
+
+            </div>
+
+            <div class="col">
+
+                <h5>
+
+                    {{ statistics.energies }}
+
+                </h5>
+
+                <small class="text-muted">
+
+                    Energy
+
+                </small>
+
+            </div>
+
+            <div class="col">
+
+                <h5>
+
+                    ${{ "%.2f"|format(statistics.total_value) }}
+
+                </h5>
+
+                <small class="text-muted">
+
+                    Value
+
+                </small>
 
             </div>
 

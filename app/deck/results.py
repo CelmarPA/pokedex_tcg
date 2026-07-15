@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from ..search.results import PaginationResult
 
 
 @dataclass(slots=True)
@@ -58,3 +59,18 @@ class AvailableDeckCard:
     collection_quantity: int
     deck_quantity: int
     max_quantity: int
+
+
+@dataclass(slots=True)
+class DeckAddCardsPage:
+
+    deck: object
+    statistics: object
+    cards: PaginationResult
+
+
+@dataclass(slots=True)
+class DeckPage:
+
+    deck: DeckDetail
+    statistics: DeckStatistics

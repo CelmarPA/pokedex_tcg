@@ -49,7 +49,7 @@ class SearchService:
             "supertypes": self.card_supertypes
         }
 
-    def get_search_context(self, ):
+    def get_search_context(self):
 
         return {
             "filter_options": self.get_filters()
