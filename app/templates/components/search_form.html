@@ -1,7 +1,10 @@
 <!-- templates/components/search_form.html -->
+
+{% set show_card_filters = show_card_filters | default(true) %}
+
 <form method="GET" class="row g-3 mb-4">
 
-    <div class="col-md-4">
+    <div class="col-md-{% if show_card_filters %}4{% else %}10{% endif %}">
 
         <input
             type="text"
@@ -13,68 +16,72 @@
 
     </div>
 
-    <div class="col-md-2">
+    {% if show_card_filters %}
 
-        <select name="type" class="form-select">
+        <div class="col-md-2">
 
-            <option value="">All Types</option>
+            <select name="type" class="form-select">
 
-            {% for type in filter_options.types %}
+                <option value="">All Types</option>
 
-                <option
-                    value="{{ type }}"
-                    {% if filters.type == type %}selected{% endif %}
-                >
-                    {{ type }}
-                </option>
+                {% for type in filter_options.types %}
 
-            {% endfor %}
+                    <option
+                        value="{{ type }}"
+                        {% if filters.type == type %}selected{% endif %}
+                    >
+                        {{ type }}
+                    </option>
 
-        </select>
+                {% endfor %}
 
-    </div>
+            </select>
 
-    <div class="col-md-2">
+        </div>
 
-        <select name="rarity" class="form-select">
+        <div class="col-md-2">
 
-            <option value="">All Rarities</option>
+            <select name="rarity" class="form-select">
 
-            {% for rarity in filter_options.rarities %}
+                <option value="">All Rarities</option>
 
-                <option
-                    value="{{ rarity }}"
-                    {% if filters.rarity == rarity %}selected{% endif %}
-                >
-                    {{ rarity }}
-                </option>
+                {% for rarity in filter_options.rarities %}
 
-            {% endfor %}
+                    <option
+                        value="{{ rarity }}"
+                        {% if filters.rarity == rarity %}selected{% endif %}
+                    >
+                        {{ rarity }}
+                    </option>
 
-        </select>
+                {% endfor %}
 
-    </div>
+            </select>
 
-    <div class="col-md-2">
+        </div>
 
-        <select name="supertype" class="form-select">
+        <div class="col-md-2">
 
-            <option value="">All Supertypes</option>
+            <select name="supertype" class="form-select">
 
-            {% for supertype in filter_options.supertypes %}
+                <option value="">All Supertypes</option>
 
-                <option
-                    value="{{ supertype }}"
-                    {% if filters.supertype == supertype %}selected{% endif %}
-                >
-                    {{ supertype }}
-                </option>
+                {% for supertype in filter_options.supertypes %}
 
-            {% endfor %}
+                    <option
+                        value="{{ supertype }}"
+                        {% if filters.supertype == supertype %}selected{% endif %}
+                    >
+                        {{ supertype }}
+                    </option>
 
-        </select>
+                {% endfor %}
 
-    </div>
+            </select>
+
+        </div>
+
+    {% endif %}
 
     <div class="col-md-2">
 

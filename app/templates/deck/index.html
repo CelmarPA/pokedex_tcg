@@ -4,6 +4,10 @@
 
 {% block content %}
 
+{% set show_card_filters = false %}
+
+{% include "components/search_form.html" %}
+
 <div class="container">
 
     <div class="d-flex justify-content-between align-item-center mb-4">
@@ -49,5 +53,6 @@
 
 </div>
 
-{% endblock %}
+{% include "components/pagination.html" %}
 
+{% endblock %}

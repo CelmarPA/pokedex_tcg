@@ -159,21 +159,20 @@ class DeckService:
             updated_at=deck.updated_at
         )
 
-    def get_user_decks(self, user):
-        decks = (
-            Deck.query
-            .options(selectinload(Deck.cards))
-            .filter_by(user_id=user.id)
-            .order_by(Deck.updated_at.desc())
-            .all()
-        )
+    def get_user_decks(self, user, filters):
 
-        print([deck.id for deck in decks])
+        decks = []
 
-        return [
-            self._build_summary(deck)
-            for deck in decks
-        ]
+        for deck in user.decks:
+
+            text = f"{deck.name} {deck.description or ''}"
+
+            if not search_service.match_search(filters.search, text):
+                continue
+
+            decks.append(self._build_summary(deck))
+
+        return search_service.paginate(decks, filters)
 
     def _build_summary(self, deck):
 

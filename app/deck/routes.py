@@ -12,9 +12,18 @@ from ..search.service import search_service
 @login_required
 def index():
 
-    decks = deck_service.get_user_decks(current_user)
+    filters = SearchFilters(request.args)
 
-    return render_template("deck/index.html", decks=decks)
+    decks = deck_service.get_user_decks(current_user, filters)
+
+    print(decks.items)
+
+    return render_template(
+        "deck/index.html",
+        decks=decks.items,
+        pagination=decks.pagination,
+        filters=filters
+    )
 
 
 @deck.route("/create", methods=["GET", "POST"])
