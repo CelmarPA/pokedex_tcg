@@ -40,9 +40,17 @@
                                 action="{{ url_for('collection.add_card', card_id=item.card.id) }}"
                                 method="POST"
                             >
+
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                >
+
                                 <button type="submit" class="btn btn-success btn-sm">
                                     + Add
                                 </button>
+
                             </form>
 
                             {% if item.quantity == 1 %}
@@ -52,9 +60,17 @@
                                     method="POST"
                                     onsubmit="return confirm('Are you sure you want to remove this card from your collection?')"
                                 >
+
+                                    <input
+                                        type="hidden"
+                                        name="csrf_token"
+                                        value="{{ csrf_token() }}"
+                                    >
+
                                     <button type="submit" class="btn btn-warning btn-sm">
                                         - Remove
                                     </button>
+
                                 </form>
 
                             {% else %}
@@ -63,9 +79,17 @@
                                     action="{{ url_for('collection.remove_card', card_id=item.card.id) }}"
                                     method="POST"
                                 >
+
+                                    <input
+                                        type="hidden"
+                                        name="csrf_token"
+                                        value="{{ csrf_token() }}"
+                                    >
+
                                     <button type="submit" class="btn btn-warning btn-sm">
                                         - Remove
                                     </button>
+
                                 </form>
 
                             {% endif %}

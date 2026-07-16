@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, abort, request
+from flask import render_template, flash, redirect, url_for, abort, request, jsonify
 from flask_login import login_required, current_user
 from . import deck
 from .exceptions import DeckValidationError, DeckNotFoundError, DeckError
@@ -59,9 +59,6 @@ def create():
 def edit(deck_id: int):
 
     deck_ = deck_service.get_deck(current_user, deck_id)
-
-    if deck_ is None:
-        raise DeckNotFoundError()
 
     form = DeckForm()
 
@@ -131,15 +128,32 @@ def add_card(deck_id: int, card_id: str):
 
     try:
 
-        deck_service.add_card(
+        page = deck_service.add_card(
             user=current_user,
             deck_id=deck_id,
             card_id=card_id
         )
 
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({
+                "success": True,
+                "quantity": page.quantity,
+                "removed": page.removed,
+                "summary": {
+                    "total_cards": page.total_cards,
+                    "total_unique_cards": page.total_unique_cards
+                }
+            })
+
         flash("Card added to deck.", "success")
 
     except DeckError as e:
+
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({
+                "success": False,
+                "message": str(e)
+            }), 400
 
         flash(str(e), "warning")
 
@@ -152,15 +166,33 @@ def remove_card(deck_id: int, card_id: str):
 
     try:
 
-        deck_service.remove_card(
+        page = deck_service.remove_card(
             user=current_user,
             deck_id=deck_id,
             card_id=card_id
         )
 
-        flash("Card remove from deck.", "success")
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+
+            return jsonify({
+                "success": True,
+                "quantity": page.quantity,
+                "removed": page.removed,
+                "summary": {
+                    "total_cards": page.total_cards,
+                    "total_unique_cards": page.total_unique_cards
+                }
+            })
+
+        flash("Card removed from deck.", "success")
 
     except DeckError as e:
+
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({
+                "success": False,
+                "message": str(e)
+            }), 400
 
         flash(str(e), "warning")
 
@@ -175,20 +207,44 @@ def update_quantity(deck_id: int, card_id: str):
 
         quantity = int(request.form["quantity"])
 
-        deck_service.update_quantity(
+        page = deck_service.update_quantity(
             user=current_user,
             deck_id=deck_id,
             card_id=card_id,
             quantity=quantity
         )
 
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            
+            return jsonify({
+                "success": True,
+                "quantity": page.quantity,
+                "removed": page.removed,
+                "summary": {
+                    "total_cards": page.total_cards,
+                    "total_unique_cards": page.total_unique_cards
+                }
+            })
+
         flash("Quantity updated.", "success")
 
     except ValueError:
 
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({
+                "success": False,
+                "message": "Invalid quantity."
+            }), 400
+
         flash("Invalid quantity.", "warning")
 
     except DeckError as e:
+
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({
+                "success": False,
+                "message": str(e)
+            }), 400
 
         flash(str(e), "warning")
 

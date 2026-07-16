@@ -1,6 +1,6 @@
 # app/__init__.py
 from flask import Flask
-from .extensions import db, migrate, login_manager
+from .extensions import db, migrate, login_manager, csrf
 from config import Config
 from .models import User
 
@@ -18,6 +18,7 @@ def create_app(config_class=Config) -> Flask:
     db.init_app(app)    # Link the extension to the app only now
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    csrf.init_app(app)
 
     login_manager.login_view = "auth.login"
 

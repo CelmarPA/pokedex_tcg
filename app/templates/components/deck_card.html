@@ -1,4 +1,4 @@
-<div class="card h-100 shadow-sm border-0">
+<div class="card deck-card h-100 shadow-sm border-0">
 
     <div class="card-body text-center">
 
@@ -8,102 +8,118 @@
             class="card-img-top mb-3"
         >
 
-        <h5 class="card-title">
-
+        <h5 class="card-title mb-1">
             {{ card.card_data.name }}
-
         </h5>
 
-        <p>
+        <p class="text-muted small mb-3">
 
-            <span class="badge bg-primary fs-6">
+            {{ card.card_data.supertype }}
 
-                Qty: {{ card.quantity }}
+            {% if card.card_data.types %}
+                • {{ card.card_data.types | join(", ") }}
+            {% endif %}
 
-            </span>
+            {% if card.card_data.hp %}
+                • HP {{ card.card_data.hp }}
+            {% endif %}
 
         </p>
 
-        <div class="d-flex justify-content-center gap-2 mb-3">
+        <div class="btn-group mb-3" role="group">
+
+            <form
+                action="{{ url_for('deck.remove_card', deck_id=deck.id, card_id=card.card_id) }}"
+                method="POST"
+                class="deck-action-form"
+                data-action="remove"
+            >
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+                <button
+                    type="submit"
+                    class="btn btn-outline-warning"
+                >
+                    −
+                </button>
+
+            </form>
+
+            <button
+                class="btn btn-outline-secondary deck-quantity"
+                disabled
+            >
+                {{ card.quantity }}
+            </button>
 
             <form
                 action="{{ url_for('deck.add_card', deck_id=deck.id, card_id=card.card_id) }}"
                 method="POST"
+                class="deck-action-form"
             >
+
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
 
                 <button
                     type="submit"
-                    class="btn btn-success btn-sm"
+                    class="btn btn-outline-success"
                 >
                     +
                 </button>
 
             </form>
 
-            {% if card.quantity == 1 %}
-
-                <form
-                    action="{{ url_for('deck.remove_card', deck_id=deck.id, card_id=card.card_id) }}"
-                    method="POST"
-                    onsubmit="return confirm('This is the last copy of this card. Remove it from the deck?')"
-                >
-
-                    <button
-                        type="submit"
-                        class="btn btn-warning btn-sm"
-                    >
-                        -
-                    </button>
-
-                </form>
-
-            {% else %}
-
-                <form
-                    action="{{ url_for('deck.remove_card', deck_id=deck.id, card_id=card.card_id) }}"
-                    method="POST"
-                >
-
-                    <button
-                        type="submit"
-                        class="btn btn-warning btn-sm"
-                    >
-                        -
-                    </button>
-
-                </form>
-
-            {% endif %}
-
         </div>
 
         <form
             action="{{ url_for('deck.update_quantity', deck_id=deck.id, card_id=card.card_id) }}"
             method="POST"
-            class="d-flex gap-2 mb-3"
+            class="deck-action-form mb-3"
         >
 
             <input
-                type="number"
-                name="quantity"
-                value="{{ card.quantity }}"
-                min="1"
-                max="60"
-                class="form-control form-control-sm text-center"
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
             >
 
-            <button
-                type="submit"
-                class="btn btn-outline-primary btn-sm"
-            >
-                Save
-            </button>
+            <label class="form-label small mb-1">
+                Quantity
+            </label>
+
+            <div class="input-group">
+
+                <input
+                    type="number"
+                    name="quantity"
+                    value="{{ card.quantity }}"
+                    min="1"
+                    max="60"
+                    class="form-control text-center deck-quantity-input"
+                >
+
+                <button
+                    type="submit"
+                    class="btn btn-outline-primary"
+                >
+                    Update
+                </button>
+
+            </div>
 
         </form>
 
         <a
             href="{{ url_for('cards.card_detail', card_id=card.card_id) }}"
-            class="btn btn-primary btn-sm w-100"
+            class="btn btn-outline-primary btn-sm w-100"
         >
             View Details
         </a>

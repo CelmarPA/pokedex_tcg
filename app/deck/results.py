@@ -74,3 +74,12 @@ class DeckPage:
 
     deck: DeckDetail
     statistics: DeckStatistics
+
+
+@dataclass(slots=True)
+class DeckAjaxResult:
+
+    quantity: int
+    removed: bool
+    total_cards: int
+    total_unique_cards: int

@@ -7,7 +7,8 @@ from .results import (
     DeckStatistics,
     DeckPage,
     AvailableDeckCard,
-    DeckAddCardsPage
+    DeckAddCardsPage,
+    DeckAjaxResult
 )
 from .validators import DeckValidator
 from .card_rules import DeckCardRules
@@ -138,17 +139,21 @@ class DeckService:
 
         else:
 
-            deck.cards.append(
-                DeckCard(
-                    card_id=card_id,
-                    name=card_data.get("name", ""),
-                    quantity=1
-                )
+            deck_card = DeckCard(
+                card_id=card_id,
+                name=card_data.get("name", ""),
+                quantity=1
             )
+
+            deck.cards.append(deck_card)
 
         self._commit()
 
-        return self._build_deck_page(deck)
+        return self._build_ajax_result(
+            deck,
+            deck_card.quantity,
+            False
+        )
 
     def remove_card(self, user, deck_id, card_id):
 
@@ -156,17 +161,27 @@ class DeckService:
 
         deck_card = self._require_deck_card(deck, card_id)
 
+        removed = False
+        quantity = 0
+
         if deck_card.quantity > 1:
 
             deck_card.quantity -= 1
+            quantity = deck_card.quantity
+
 
         else:
 
             db.session.delete(deck_card)
+            removed = True
 
         self._commit()
 
-        return self._build_deck_page(deck)
+        return self._build_ajax_result(
+            deck=deck,
+            quantity=quantity,
+            removed=removed
+        )
 
     def update_quantity(self, user, deck_id, card_id, quantity):
 
@@ -200,7 +215,11 @@ class DeckService:
 
         self._commit()
 
-        return self._build_deck_page(deck)
+        return self._build_ajax_result(
+            deck=deck,
+            quantity=quantity,
+            removed=False
+        )
 
     def get_statistics(self, user, deck_id):
 
@@ -272,6 +291,15 @@ class DeckService:
             statistics=page.statistics,
             cards=cards
         )
+
+    def get_summary(self, user, deck_id):
+
+        deck = self._get_deck(user, deck_id)
+
+        if deck is None:
+            raise DeckNotFoundError()
+
+        return self._build_summary(deck)
 
     def _get_deck(self, user, deck_id):
         return (
@@ -486,6 +514,15 @@ class DeckService:
         except SQLAlchemyError:
             db.session.rollback()
             raise
+
+    def _build_ajax_result(self, deck, quantity: int, removed: bool):
+
+        return DeckAjaxResult(
+            quantity=quantity,
+            removed=removed,
+            total_cards=self._count_cards(deck),
+            total_unique_cards=self._count_unique_cards(deck)
+        )
 
 
 deck_service = DeckService()
