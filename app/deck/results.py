@@ -4,6 +4,25 @@ from ..search.results import PaginationResult
 
 
 @dataclass(slots=True)
+class DeckCardSection:
+
+    title: str
+    subtitle: str
+    cards: list[DeckCardDetail]
+    total_cards: int
+    unique_cards: int
+
+
+@dataclass(slots=True)
+class DeckCardGroup:
+
+    title: str
+    total_cards: int
+    unique_cards: int
+    sections: list[DeckCardSection]
+
+
+@dataclass(slots=True)
 class DeckSummary:
 
     id: int
@@ -29,7 +48,7 @@ class DeckDetail:
     id: int
     name: str
     description: str
-    cards: list[DeckCardDetail]
+    sections: list[DeckCardSection]
     total_cards: int
     total_unique_cards: int
     created_at: datetime
@@ -42,8 +61,11 @@ class DeckStatistics:
     total_cards: int
     total_unique_cards: int
     pokemon: int
+    pokemon_unique: int
     trainers: int
+    trainers_unique: int
     energies: int
+    energies_unique: int
     average_hp: int
     average_price: float
     total_value: float
@@ -73,6 +95,7 @@ class DeckAddCardsPage:
 class DeckPage:
 
     deck: DeckDetail
+    summary: DeckSummary
     statistics: DeckStatistics
 
 

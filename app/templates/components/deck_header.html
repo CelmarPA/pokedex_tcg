@@ -2,48 +2,171 @@
 
     <div class="card-body">
 
-        <div class="d-flex justify-content-between align-items-start mb-3">
+        <div class="d-flex justify-content-between align-items-start mb-4">
 
             <div>
 
                 <h2 class="mb-2">
-
                     {{ deck.name }}
-
                 </h2>
 
-                <p class="text-muted mb-3">
-
+                <p class="text-muted mb-0">
                     {{ deck.description or "No description." }}
-
                 </p>
 
             </div>
 
-            <div class="text-end">
+            <div class="btn-group">
 
-                <div class="btn-group">
+                <a
+                    href="{{ url_for('deck.edit', deck_id=deck.id) }}"
+                    class="btn btn-warning"
+                >
+                    Edit
+                </a>
 
-                    <a
-                        href="{{ url_for('deck.edit', deck_id=deck.id) }}"
-                        class="btn btn-warning"
-                    >
-                        Edit
-                    </a>
+                <a
+                    href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
+                    class="btn btn-success"
+                >
+                    Add Cards
+                </a>
 
-                    <a
-                        href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
-                        class="btn btn-success"
-                    >
-                        Add Cards
-                    </a>
+                <a
+                    href="{{ url_for('deck.statistics', deck_id=deck.id) }}"
+                    class="btn btn-info"
+                >
+                    Statistics
+                </a>
 
-                    <a
-                        href="{{ url_for('deck.statistics', deck_id=deck.id) }}"
-                        class="btn btn-info"
-                    >
-                        Statistics
-                    </a>
+            </div>
+
+        </div>
+
+        <div class="progress mb-4" style="height:24px;">
+
+            <div
+                class="progress-bar bg-success fw-bold"
+                style="width: {{ (statistics.total_cards / 60 * 100)|round(1) }}%;"
+            >
+
+                {{ statistics.total_cards }} / 60
+
+            </div>
+
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-lg-3">
+
+                <div class="card text-center h-100">
+
+                    <div class="card-body">
+
+                        <h2
+                            id="deck-total-cards"
+                            class="text-primary mb-0"
+                        >
+                            {{ statistics.total_cards }}
+                        </h2>
+
+                        <small class="text-muted">
+
+                            Total Cards
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3">
+
+                <div class="card text-center h-100">
+
+                    <div class="card-body">
+
+                        <h2
+                            id="deck-total-unique"
+                            class="text-success mb-0"
+                        >
+                            {{ statistics.total_unique_cards }}
+                        </h2>
+
+                        <small class="text-muted">
+
+                            Unique Cards
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="card h-100">
+
+                    <div class="card-body">
+
+                        <div class="row text-center">
+
+                            <div class="col">
+
+                                <h4 class="mb-0">
+
+                                    {{ statistics.pokemon }}
+
+                                </h4>
+
+                                <small class="text-muted">
+
+                                    Pokémon
+
+                                </small>
+
+                            </div>
+
+                            <div class="col">
+
+                                <h4 class="mb-0">
+
+                                    {{ statistics.trainers }}
+
+                                </h4>
+
+                                <small class="text-muted">
+
+                                    Trainers
+
+                                </small>
+
+                            </div>
+
+                            <div class="col">
+
+                                <h4 class="mb-0">
+
+                                    {{ statistics.energies }}
+
+                                </h4>
+
+                                <small class="text-muted">
+
+                                    Energy
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -51,113 +174,19 @@
 
         </div>
 
-        <div class="progress mb-3" style="height: 24px;">
+        <div class="card mt-3 border-success">
 
-            <div
-                class="progress-bar"
-                role="progressbar"
-                style="width: {{ (statistics.total_cards / 60 * 100)|round(1) }}%;"
-            >
+            <div class="card-body text-center">
 
-                {{ statistics.total_cards }}/60
-
-            </div>
-
-        </div>
-
-        <div class="row text-center">
-
-            <div class="col">
-
-                <h5>
-
-                    {{ statistics.total_cards }}
-
-                </h5>
-
-                <small class="text-muted">
-
-                    Cards
-
-                </small>
-
-            </div>
-
-            <div class="col">
-
-                <h5>
-
-                    {{ statistics.total_unique_cards }}
-
-                </h5>
-
-                <small class="text-muted">
-
-                    Unique
-
-                </small>
-
-            </div>
-
-            <div class="col">
-
-                <h5>
-
-                    {{ statistics.pokemon }}
-
-                </h5>
-
-                <small class="text-muted">
-
-                    Pokémon
-
-                </small>
-
-            </div>
-
-            <div class="col">
-
-                <h5>
-
-                    {{ statistics.trainers }}
-
-                </h5>
-
-                <small class="text-muted">
-
-                    Trainers
-
-                </small>
-
-            </div>
-
-            <div class="col">
-
-                <h5>
-
-                    {{ statistics.energies }}
-
-                </h5>
-
-                <small class="text-muted">
-
-                    Energy
-
-                </small>
-
-            </div>
-
-            <div class="col">
-
-                <h5>
+                <h3 class="text-success mb-0">
 
                     ${{ "%.2f"|format(statistics.total_value) }}
 
-                </h5>
+                </h3>
 
                 <small class="text-muted">
 
-                    Value
+                    Estimated Market Value
 
                 </small>
 

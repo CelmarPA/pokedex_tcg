@@ -88,7 +88,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (data.removed) {
 
-                card.remove();
+                const column = card.parentElement;
+
+                if (column) {
+
+                    column.remove();
+
+                }
 
             }
 

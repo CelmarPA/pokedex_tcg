@@ -8,57 +8,106 @@
 
     {% include "components/deck_header.html" %}
 
-    <div class="d-flex justify-content-end mb-4">
+    {% if deck.sections %}
 
-        <a
-            href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
-            class="btn btn-success"
-        >
+        {% set current_title = None %}
 
-            + Add Card
+        {% for section in deck.sections %}
 
-        </a>
+            {% if current_title != section.title %}
 
-    </div>
+                {% set current_title = section.title %}
 
-    <div class="row g-4">
+                <div class="mt-5 mb-4">
 
-        {% for card in deck.cards %}
+                    <h2 class="border-bottom pb-2">
 
-            <div class="col-md-4 col-lg-3">
+                        {{ section.title }}
 
-                {% include "components/deck_card.html" %}
-
-            </div>
-
-        {% else %}
-
-            <div class="col-12">
-
-                <div class="alert alert-info text-center">
-
-                    <p class="mb-3">
-
-                        This deck doesn't contain any cards yet.
-
-                    </p>
-
-                    <a
-                        href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
-                        class="btn btn-success"
-                    >
-
-                        Add Your First Card
-
-                    </a>
+                    </h2>
 
                 </div>
 
+            {% endif %}
+
+            <div class="mb-5">
+
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+
+                    <div>
+
+                        <h3 class="mb-0">
+
+                            {{ section.title }}
+
+                            <small class="text-muted">
+
+                                • {{ section.subtitle }}
+
+                            </small>
+
+                        </h3>
+
+                    </div>
+
+                    <div>
+
+                        <span class="badge bg-primary">
+
+                            {{ section.total_cards }} Cards
+
+                        </span>
+
+                        <span class="badge bg-secondary">
+
+                            {{ section.unique_cards }} Unique
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="row g-4 mt-2">
+
+                    {% for card in section.cards %}
+
+                        <div class="col-md-4 col-lg-3">
+
+                            {% include "components/deck_card.html" %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            
             </div>
 
         {% endfor %}
 
-    </div>
+    {% else %}
+
+        <div class="alert alert-info text-center">
+
+            <p class="mb-3">
+
+                This deck doesn't contain any cards yet.
+
+            </p>
+
+            <a
+                href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
+                class="btn btn-success"
+            >
+
+                Add Your First Card
+
+            </a>
+
+        </div>
+
+    {% endif %}
 
 </div>
 
@@ -66,7 +115,6 @@
 
 {% block scripts %}
 
-    <script src="{{ url_for('static', filename='js/deck.js') }}"
-    ></script>
+<script src="{{ url_for('static', filename='js/deck.js') }}"></script>
 
 {% endblock %}

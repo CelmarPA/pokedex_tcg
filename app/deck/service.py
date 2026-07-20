@@ -1,6 +1,13 @@
+from collections import defaultdict
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
+from .constants import (
+    POKEMON_ORDER,
+    TRAINER_ORDER,
+    ENERGY_ORDER
+)
 from .results import (
+    DeckCardSection,
     DeckSummary,
     DeckCardDetail,
     DeckDetail,
@@ -351,6 +358,109 @@ class DeckService:
     def _count_unique_cards(self, deck):
         return len(deck.cards)
 
+    def _get_pokemon_subtype(self, card_data):
+
+        subtypes = card_data.get("subtypes", [])
+
+        priority = [
+            "ex",
+            "EX",
+            "VMAX",
+            "VSTAR",
+            "V-UNION",
+            "V",
+            "GX",
+            "BREAK",
+            "LEGEND",
+            "Radiant",
+            "Shiny",
+            "Baby",
+            "Stage 2",
+            "Stage 1",
+            "Basic"
+        ]
+
+        for subtype in priority:
+
+            if subtype in subtypes:
+                return subtype
+
+        return subtypes[0] if subtypes else "Basic"
+
+    def _build_sections(self, cards):
+
+        groups = {
+            "Pokémon": defaultdict(list),
+            "Trainer": defaultdict(list),
+            "Energy": defaultdict(list),
+        }
+
+        for card in cards:
+
+            data = card.card_data
+
+            supertype = data.get("supertype", "")
+
+            if supertype == "Pokémon":
+
+                subtype = self._get_pokemon_subtype(data)
+
+            elif supertype == "Trainer":
+
+                subtype = data.get(
+                    "subtypes",
+                    ["Item"]
+                )[0]
+
+            elif supertype == "Energy":
+
+                subtype = (
+                    "Special"
+                    if "Special" in data.get("subtypes", [])
+                    else "Basic"
+                )
+
+            else:
+                continue
+
+            groups[supertype][subtype].append(card)
+
+        sections = []
+
+        config = (
+            ("Pokémon", POKEMON_ORDER),
+            ("Trainer", TRAINER_ORDER),
+            ("Energy", ENERGY_ORDER),
+        )
+
+        for title, order in config:
+
+            for subtype in sorted(
+                    groups[title],
+                    key=lambda x: order.get(x, 999)
+            ):
+                section_cards = sorted(
+                    groups[title][subtype],
+                    key=lambda c: c.card_data["name"]
+                )
+
+                sections.append(
+
+                    DeckCardSection(
+                        title=title,
+                        subtitle=subtype,
+                        cards=section_cards,
+                        total_cards=sum(
+                            card.quantity
+                            for card in section_cards
+                        ),
+                        unique_cards=len(section_cards)
+                    )
+
+                )
+
+        return sections
+
     def _build_summary(self, deck):
         return DeckSummary(
             id=deck.id,
@@ -388,7 +498,7 @@ class DeckService:
             id=deck.id,
             name=deck.name,
             description=deck.description,
-            cards=cards,
+            sections=self._build_sections(cards),
             total_cards=self._count_cards(deck),
             total_unique_cards=self._count_unique_cards(deck),
             created_at=deck.created_at,
@@ -404,8 +514,11 @@ class DeckService:
         total_unique_cards = self._count_unique_cards(deck)
 
         pokemon = 0
+        pokemon_unique = 0
         trainers = 0
+        trainers_unique = 0
         energies = 0
+        energies_unique = 0
 
         hp_total = 0
         hp_count = 0
@@ -430,6 +543,7 @@ class DeckService:
             if supertype == "Pokémon":
 
                 pokemon += quantity
+                pokemon_unique += 1
 
                 hp = card_data.get("hp")
 
@@ -447,11 +561,13 @@ class DeckService:
             elif supertype == "Trainer":
 
                 trainers += quantity
+                trainers_unique += 1
 
             # Energy
             elif supertype == "Energy":
 
                 energies += quantity
+                energies_unique += 1
 
             # Market Value
             total_value += (
@@ -480,8 +596,11 @@ class DeckService:
             total_cards=total_cards,
             total_unique_cards=total_unique_cards,
             pokemon=pokemon,
+            pokemon_unique=pokemon_unique,
             trainers=trainers,
+            trainers_unique=trainers_unique,
             energies=energies,
+            energies_unique=energies_unique,
             average_hp=average_hp,
             average_price=average_price,
             total_value=round(total_value, 2),
@@ -504,7 +623,8 @@ class DeckService:
 
         return DeckPage(
             deck=detail,
-            statistics=statistics
+            summary=self._build_summary(deck),
+            statistics=statistics,
         )
 
     def _commit(self):
