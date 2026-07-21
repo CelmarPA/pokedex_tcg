@@ -43,14 +43,20 @@
 
         </div>
 
-        <div class="progress mb-4" style="height:24px;">
+        <div class="progress mb-3" style="height:24px;">
 
             <div
-                class="progress-bar bg-success fw-bold"
+                id="deck-progress-bar"
+                class="progress-bar"
+                role="progressbar"
                 style="width: {{ (statistics.total_cards / 60 * 100)|round(1) }}%;"
             >
 
-                {{ statistics.total_cards }} / 60
+                <span id="deck-progress-text">
+
+                    {{ statistics.total_cards }} / 60
+
+                </span>
 
             </div>
 
@@ -64,12 +70,12 @@
 
                     <div class="card-body">
 
-                        <h2
+                        <h5
                             id="deck-total-cards"
                             class="text-primary mb-0"
                         >
                             {{ statistics.total_cards }}
-                        </h2>
+                        </h5>
 
                         <small class="text-muted">
 
@@ -89,12 +95,12 @@
 
                     <div class="card-body">
 
-                        <h2
+                        <h5
                             id="deck-total-unique"
                             class="text-success mb-0"
                         >
                             {{ statistics.total_unique_cards }}
-                        </h2>
+                        </h5>
 
                         <small class="text-muted">
 
@@ -118,11 +124,14 @@
 
                             <div class="col">
 
-                                <h4 class="mb-0">
+                                <h5
+                                    id="deck-total-pokemon"
+                                    class="mb-0"
+                                >
 
                                     {{ statistics.pokemon }}
 
-                                </h4>
+                                </h5>
 
                                 <small class="text-muted">
 
@@ -134,11 +143,14 @@
 
                             <div class="col">
 
-                                <h4 class="mb-0">
+                                <h5
+                                    id="deck-total-trainers"
+                                    class="mb-0"
+                                >
 
                                     {{ statistics.trainers }}
 
-                                </h4>
+                                </h5>
 
                                 <small class="text-muted">
 
@@ -150,11 +162,14 @@
 
                             <div class="col">
 
-                                <h4 class="mb-0">
+                                <h5
+                                    id="deck-total-energies"
+                                    class="mb-0"
+                                >
 
                                     {{ statistics.energies }}
 
-                                </h4>
+                                </h5>
 
                                 <small class="text-muted">
 
@@ -178,11 +193,14 @@
 
             <div class="card-body text-center">
 
-                <h3 class="text-success mb-0">
+                <h5
+                    id="deck-total-value"
+                    class="text-success mb-0"
+                >
 
                     ${{ "%.2f"|format(statistics.total_value) }}
 
-                </h3>
+                </h5>
 
                 <small class="text-muted">
 

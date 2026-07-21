@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from datetime import datetime
 from ..search.results import PaginationResult
 
@@ -100,9 +100,42 @@ class DeckPage:
 
 
 @dataclass(slots=True)
+class DeckAjaxSummary:
+
+    total_cards: int
+    total_unique_cards: int
+    pokemon: int
+    trainers: int
+    energies: int
+    total_value: float
+    progress: float
+
+
+@dataclass(slots=True)
+class DeckAjaxSection:
+
+    title: str
+    subtitle: str
+    total_cards: int
+    unique_cards: int
+
+
+@dataclass(slots=True)
 class DeckAjaxResult:
 
     quantity: int
     removed: bool
-    total_cards: int
-    total_unique_cards: int
+    summary: DeckAjaxSummary
+    sections: list[DeckAjaxSection]
+
+    def to_dict(self):
+
+        return {
+            "quantity": self.quantity,
+            "removed": self.removed,
+            "summary": asdict(self.summary),
+            "sections": [
+                asdict(section)
+                for section in self.sections
+            ]
+        }

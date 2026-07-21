@@ -10,13 +10,13 @@
 
     {% if deck.sections %}
 
-        {% set current_title = None %}
+        {% set ns = namespace(current_title=None) %}
 
         {% for section in deck.sections %}
 
-            {% if current_title != section.title %}
+            {% if ns.current_title != section.title %}
 
-                {% set current_title = section.title %}
+                {% set ns.current_title = section.title %}
 
                 <div class="mt-5 mb-4">
 
@@ -30,35 +30,30 @@
 
             {% endif %}
 
-            <div class="mb-5">
+            <div
+                class="mb-5 deck-section"
+                data-title="{{ section.title }}"
+                data-section="{{ section.subtitle }}"
+            >
 
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
 
-                    <div>
+                    <h4 class="mb-0">
 
-                        <h3 class="mb-0">
+                        {{ section.subtitle }}
 
-                            {{ section.title }}
-
-                            <small class="text-muted">
-
-                                • {{ section.subtitle }}
-
-                            </small>
-
-                        </h3>
-
-                    </div>
+                    </h4>
 
                     <div>
 
-                        <span class="badge bg-primary">
+                        <span class="badge bg-primary section-total-cards">
 
                             {{ section.total_cards }} Cards
 
                         </span>
 
-                        <span class="badge bg-secondary">
+
+                        <span class="badge bg-secondary section-unique-cards">
 
                             {{ section.unique_cards }} Unique
 
@@ -81,29 +76,49 @@
                     {% endfor %}
 
                 </div>
-            
+
             </div>
 
         {% endfor %}
 
     {% else %}
 
-        <div class="alert alert-info text-center">
+        <div class="card shadow-sm border-0 py-5">
 
-            <p class="mb-3">
+            <div class="card-body text-center">
 
-                This deck doesn't contain any cards yet.
+                <div class="display-1 mb-3">
 
-            </p>
+                    🃏
 
-            <a
-                href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
-                class="btn btn-success"
-            >
+                </div>
 
-                Add Your First Card
+                <h2 class="mb-3">
 
-            </a>
+                    Your deck is empty
+
+                </h2>
+
+                <p class="text-muted mb-4">
+
+                     Start building your deck by adding cards from your collection.
+
+                    <br>
+
+                    You can add Pokémon, Trainers and Energy cards.
+
+                </p>
+
+                <a
+                    href="{{ url_for('deck.add_card_page', deck_id=deck.id) }}"
+                    class="btn btn-success btn-lg px-5"
+                >
+
+                    + Add Cards
+
+                </a>
+
+            </div>
 
         </div>
 

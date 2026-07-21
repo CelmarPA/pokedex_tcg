@@ -137,12 +137,7 @@ def add_card(deck_id: int, card_id: str):
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return jsonify({
                 "success": True,
-                "quantity": page.quantity,
-                "removed": page.removed,
-                "summary": {
-                    "total_cards": page.total_cards,
-                    "total_unique_cards": page.total_unique_cards
-                }
+                **page.to_dict()
             })
 
         flash("Card added to deck.", "success")
@@ -173,15 +168,9 @@ def remove_card(deck_id: int, card_id: str):
         )
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-
             return jsonify({
                 "success": True,
-                "quantity": page.quantity,
-                "removed": page.removed,
-                "summary": {
-                    "total_cards": page.total_cards,
-                    "total_unique_cards": page.total_unique_cards
-                }
+                **page.to_dict()
             })
 
         flash("Card removed from deck.", "success")
@@ -215,15 +204,9 @@ def update_quantity(deck_id: int, card_id: str):
         )
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            
             return jsonify({
                 "success": True,
-                "quantity": page.quantity,
-                "removed": page.removed,
-                "summary": {
-                    "total_cards": page.total_cards,
-                    "total_unique_cards": page.total_unique_cards
-                }
+                **page.to_dict()
             })
 
         flash("Quantity updated.", "success")

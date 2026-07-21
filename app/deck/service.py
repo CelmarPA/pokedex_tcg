@@ -15,7 +15,7 @@ from .results import (
     DeckPage,
     AvailableDeckCard,
     DeckAddCardsPage,
-    DeckAjaxResult
+    DeckAjaxResult, DeckAjaxSummary, DeckAjaxSection
 )
 from .validators import DeckValidator
 from .card_rules import DeckCardRules
@@ -439,10 +439,27 @@ class DeckService:
                     groups[title],
                     key=lambda x: order.get(x, 999)
             ):
-                section_cards = sorted(
-                    groups[title][subtype],
-                    key=lambda c: c.card_data["name"]
-                )
+
+                if title == "Pokémon":
+
+                    section_cards = sorted(
+                        groups[title][subtype],
+                        key=self._pokemon_sort_key
+                    )
+
+                elif title == "Trainer":
+
+                    section_cards = sorted(
+                        groups[title][subtype],
+                        key=self._trainer_sort_key
+                    )
+
+                else:
+
+                    section_cards = sorted(
+                        groups[title][subtype],
+                        key=self._energy_sort_key
+                    )
 
                 sections.append(
 
@@ -637,12 +654,116 @@ class DeckService:
 
     def _build_ajax_result(self, deck, quantity: int, removed: bool):
 
+        cards_data = card_service.get_cards_smart(
+            [
+                card.card_id
+                for card in deck.cards
+            ]
+        )
+
+        statistics = self._build_statistics(
+            deck,
+            cards_data
+        )
+
+        progress = (
+            round(
+                statistics.total_cards / 60 * 100,
+                1
+            )
+            if statistics.total_cards
+            else 0
+        )
+
+        detail = self._build_deck_detail(
+            deck,
+            cards_data
+        )
+
+        sections = [
+            DeckAjaxSection(
+                title = section.title,
+                subtitle=section.subtitle,
+                total_cards=section.total_cards,
+                unique_cards=section.unique_cards
+            )
+            for section in detail.sections
+        ]
+
         return DeckAjaxResult(
             quantity=quantity,
             removed=removed,
-            total_cards=self._count_cards(deck),
-            total_unique_cards=self._count_unique_cards(deck)
+
+            summary=DeckAjaxSummary(
+                total_cards=statistics.total_cards,
+                total_unique_cards=statistics.total_unique_cards,
+                pokemon=statistics.pokemon,
+                trainers=statistics.trainers,
+                energies=statistics.energies,
+                total_value=statistics.total_value,
+                progress=progress
+            ),
+
+            sections=sections
         )
+
+    def _pokemon_sort_key(self, card):
+
+        data = card.card_data
+
+        hp = data.get("hp")
+
+        try:
+
+            hp = int(hp)
+
+        except (TypeError, ValueError):
+
+            hp = 0
+
+        stage_order = {
+            "Basic": 0,
+            "Stage 1": 1,
+            "Stage 2": 2
+        }
+
+        stage = 99
+
+        for subtype in data.get("subtype", []):
+
+            if subtype in stage_order:
+
+                stage = stage_order[subtype]
+                break
+
+        return (
+            stage,
+            -hp,
+            data.get("name", "")
+        )
+
+    def _trainer_sort_key(self, card):
+
+        return (
+            card.card_data.get("name", "")
+        )
+
+    def _energy_sort_key(self, card):
+
+        data = card.card_data
+
+        energy_type = ""
+
+        if data.get("types"):
+
+            energy_type = data["types"][0]
+
+        return (
+            energy_type,
+            data.get("name", "")
+        )
+
+
 
 
 deck_service = DeckService()
